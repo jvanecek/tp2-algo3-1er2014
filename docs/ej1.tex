@@ -4,6 +4,27 @@
 
 \subsection{Resoluci\'on}
 
+\subsubsection{1era solucion}
+En cada mano, agarrar la cantidad de cartas que sumen mas. 
+
+No funciona. Contraejemplo: $[-1, -6, -10]$
+  
+\subsubsection{2da solucion}
+
+Sea $v$ un vector de $n$ enteros que son los valores de las cartas, y dada la funcion recursiva: 
+
+\begin{equation*}
+ \hspace*{-2cm}
+ f(i,j,p) = \max \left( 
+  \underbrace{ \max_{1\leq k \leq j}{ \left\{ \left( \sum_{t=i}^k v_t \right) p + f\left(k,j, (p+1)\bmod{2} \right) \right\} } }_{ \text{Lo mejor de la izquierda} },
+  \underbrace{ \max_{1\leq k \leq j}{ \left\{ \left( \sum_{t=k}^j v_t \right) p + f\left(i,k, (p+1)\bmod{2} \right) \right\} } }_{ \text{Lo mejor de la derecha} }
+ \right) 
+\end{equation*}
+
+La soluci\'on al problema es $f(1,n,0)$ donde el 3er par\'ametro puede ser 0 o 1, y representa al jugador
+
+% \left{ \right} 
+
 \subsection{Demostraci\'on}
 
 \subsection{An\'alisis de complejidad}
