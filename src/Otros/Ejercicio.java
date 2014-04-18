@@ -13,3 +13,4 @@ public interface Ejercicio {
 
     public String getOutput();
 }
+// vim: set tabstop=4 shiftwidth=4 expandtab autoindent:

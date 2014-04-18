@@ -26,3 +26,4 @@ public class InstanceEj2 implements Ejercicio {
     
     }
 }
+// vim: set tabstop=4 shiftwidth=4 expandtab autoindent:

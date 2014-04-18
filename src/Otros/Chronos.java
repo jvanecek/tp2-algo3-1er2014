@@ -30,3 +30,4 @@ public class Chronos {
         return estimatedTime/iter;
     }
 }
+// vim: set tabstop=4 shiftwidth=4 expandtab autoindent:

@@ -8,3 +8,4 @@ public class Main {
         
     }
 }
+// vim: set tabstop=4 shiftwidth=4 expandtab autoindent:
