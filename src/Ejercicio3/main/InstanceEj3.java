@@ -23,7 +23,7 @@ public class InstanceEj3 implements Ejercicio {
     }
 
     public String getOutput(){
-        
+			return "";
     }
 }
 // vim: set tabstop=4 shiftwidth=4 expandtab autoindent:

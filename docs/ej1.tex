@@ -13,8 +13,7 @@ No funciona. Contraejemplo: $[-1, -6, -10]$
 
 Sea $v$ un vector de $n$ enteros que son los valores de las cartas, y dada la funcion recursiva: 
 
-\begin{equation*}
- \hspace*{-2cm}
+\begin{equation*}\hspace*{-2cm}
  f(i,j,p) = \max \left( 
   \underbrace{ \max_{1\leq k \leq j}{ \left\{ \left( \sum_{t=i}^k v_t \right) p + f\left(k,j, (p+1)\bmod{2} \right) \right\} } }_{ \text{Lo mejor de la izquierda} },
   \underbrace{ \max_{1\leq k \leq j}{ \left\{ \left( \sum_{t=k}^j v_t \right) p + f\left(i,k, (p+1)\bmod{2} \right) \right\} } }_{ \text{Lo mejor de la derecha} }
@@ -24,6 +23,28 @@ Sea $v$ un vector de $n$ enteros que son los valores de las cartas, y dada la fu
 La soluci\'on al problema es $f(1,n,0)$ donde el 3er par\'ametro puede ser 0 o 1, y representa al jugador
 
 % \left{ \right} 
+
+\subsubsection{3ra solucion}
+
+La solucion es el valor $\max (f_{\rightarrow}(1,n,yo), f_{\leftarrow}(1,n,yo))$ donde las funciones internas se definen como: 
+
+\begin{align*}\hspace*{-2cm}
+ f_{\rightarrow}(i,j,p) &= 
+ \left\{
+    \begin{array}{ll}
+	\displaystyle \max_{1\leq k\leq j} \left\{ \sum_{t=i}^k v[t] + \min( f_{\rightarrow}(k+1, j, p.next()), f_{\leftarrow}(k+1,j,p.next() ))  \right\}& \mbox{si } p = yo \\
+	\displaystyle \min_{1\leq k\leq j} \left\{ \max( f_{\rightarrow}(k+1, j, p.next()), f_{\leftarrow}(k+1,j,p.next() ) \right\} & \mbox{si } p = tu
+    \end{array}
+\right. \\
+ f_{\leftarrow}(i,j,p) &= 
+ \left\{
+    \begin{array}{ll}
+	\displaystyle \max_{1\leq k\leq j} \left\{ \sum_{t=k}^j v[t] + \min( f_{\rightarrow}(i, k-1, p.next()), f_{\leftarrow}(i, k-1,p.next() ))  \right\}& \mbox{si } p = yo \\
+	\displaystyle \min_{1\leq k\leq j} \left\{ \max( f_{\rightarrow}(i, k-1, p.next()), f_{\leftarrow}(i, k-1,p.next() ) \right\} & \mbox{si } p = tu
+    \end{array}
+\right. \\
+\end{align*}
+
 
 \subsection{Demostraci\'on}
 

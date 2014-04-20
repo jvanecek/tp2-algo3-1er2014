@@ -33,6 +33,7 @@ public class Exercise1Tests {
 		InstanceEj1 e = new InstanceEj1();
 		e.receiveInput( "3 1 -10 1" );
 		e.resolve();
+
 		Assert.assertEquals( "-8", e.getOutput() );
 	}
 }

@@ -1,4 +1,4 @@
-package Ejercicio1.main;
+package Ejercicio1.model;
 
 import Otros.Ejercicio;
 import Otros.Utils;
