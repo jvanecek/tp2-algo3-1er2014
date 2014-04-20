@@ -6,14 +6,15 @@ import Otros.Utils;
 public class InstanceEj1 implements Ejercicio {
     private int[] cartas; /**< Cartas del juego. */
     private int puntos; /**< Puntaje del jugador 1 del juego finalizado. */
-    private Cache cacheDerecha, cacheIzquierda;
+    private Cache cacheIzq, cacheDer;
 
     private static final int MI_TURNO = 1;
     private static final int TU_TURNO = 2;
     private static final int HACIA_LA_DERECHA = +1;
     private static final int HACIA_LA_IZQUIERDA = -1;
 
-    private int _tu, _yo;
+    private int max( int a, int b ) { return a < b ? b : a; }
+    private int min( int a, int b ) { return a < b ? a : b; }
 
     public void receiveInput( String input ){
         boolean primero = true;
@@ -27,106 +28,66 @@ public class InstanceEj1 implements Ejercicio {
             cartas[indice++] = Integer.parseInt(str);
         }
 
-        cacheDerecha = new Cache( cartas.length );
-        cacheIzquierda = new Cache( cartas.length );
+        cacheIzq = new Cache( cartas );
+        cacheDer = new Cache( cartas );
     }
 
-    private int max( int a, int b ) { return a < b ? b : a; }
-    private int min( int a, int b ) { return a < b ? a : b; }
+    private void construir() {
+        int n = cartas.length;
 
-    private void resolverDesdeLaIzquierdaCache( int first, int last ) {
-        if ( first > last ) {
-            _yo = _tu = 0;
-            return ;
+        for ( int i = 1; i < n; i++ ) {
+            for ( int j = i; j < n; j++ ) {
+                // Desde la izquierda
+                int puntos = 0;
+                int maximo = Integer.MIN_VALUE;
+                int minimo = Integer.MAX_VALUE;
+                for ( int p = j - i; p < j; p++ ) {
+                    puntos += cartas[p];
+                    int minI = cacheIzq.get( p + 1, j, TU_TURNO );
+                    int minD = cacheDer.get( p + 1, j, TU_TURNO );
+                    int maxI = cacheIzq.get( p + 1, j, MI_TURNO );
+                    int maxD = cacheDer.get( p + 1, j, MI_TURNO );
+                    minimo = min( minimo, max( maxI, maxD ) );
+                    maximo = max( maximo, puntos + min( minI, minD ) );
+                }
+                puntos += cartas[j];
+                minimo = min( minimo, 0 );
+                maximo = max( maximo, puntos );
+                cacheIzq.set( j - i, j, MI_TURNO, maximo );
+                cacheIzq.set( j - i, j, TU_TURNO, minimo );
+
+                // Desde la derecha
+                maximo = Integer.MIN_VALUE;
+                minimo = Integer.MAX_VALUE;
+                puntos = 0;
+                for ( int p = j; p > j - i; p-- ) {
+                    puntos += cartas[p];
+                    int minI = cacheIzq.get( j - i, p - 1, TU_TURNO );
+                    int minD = cacheDer.get( j - i, p - 1, TU_TURNO );
+                    int maxI = cacheIzq.get( j - i, p - 1, MI_TURNO );
+                    int maxD = cacheDer.get( j - i, p - 1, MI_TURNO );
+                    minimo = min( minimo, max( maxI, maxD ) );
+                    maximo = max( maximo, puntos + min( minI, minD ) );
+                }
+                puntos += cartas[j-i];
+                minimo = min( minimo, 0 );
+                maximo = max( maximo, puntos );
+                cacheDer.set( j - i, j, MI_TURNO, maximo );
+                cacheDer.set( j - i, j, TU_TURNO, minimo );
+            }
         }
-
-        if ( cacheIzquierda.has( first, last, MI_TURNO ) ) {
-            _yo = cacheIzquierda.get( first, last, MI_TURNO );
-            _tu = cacheIzquierda.get( first, last, TU_TURNO );
-            return;
-        }
-        resolverDesdeLaIzquierda( first, last );
-        cacheIzquierda.set( first, last, MI_TURNO, _yo );
-        cacheIzquierda.set( first, last, TU_TURNO, _tu );
-    }
-
-    private void resolverDesdeLaDerechaCache( int first, int last ) {
-        if ( first > last ) {
-            _yo = _tu = 0;
-            return ;
-        }
-
-        if ( cacheDerecha.has( first, last, MI_TURNO ) ) {
-            _yo = cacheDerecha.get( first, last, MI_TURNO );
-            _tu = cacheDerecha.get( first, last, TU_TURNO );
-            return;
-        }
-        resolverDesdeLaDerecha( first, last );
-        cacheDerecha.set( first, last, MI_TURNO, _yo );
-        cacheDerecha.set( first, last, TU_TURNO, _tu );
-    }
-
-    private void resolverDesdeLaIzquierda( int first, int last ) {
-        if ( first > last ) {
-            _yo = _tu = 0;
-            return;
-        }
-
-        int puntos = 0;
-        int maximo = Integer.MIN_VALUE;
-        int minimo = Integer.MAX_VALUE;
-        for ( int i = first; i <= last; i++ ) {
-            puntos += cartas[i];
-            resolverDesdeLaIzquierdaCache( i + 1, last );
-            int puntosDesdeLaIzquierdaYo = _yo;
-            int puntosDesdeLaIzquierdaTu = _tu;
-            resolverDesdeLaDerechaCache( i + 1, last );
-            int puntosDesdeLaDerechaYo = _yo;
-            int puntosDesdeLaDerechaTu = _tu;
-            maximo = max( maximo, puntos + min( puntosDesdeLaIzquierdaTu, puntosDesdeLaDerechaTu ) );
-            minimo = min( minimo, max( puntosDesdeLaIzquierdaYo, puntosDesdeLaDerechaYo ) );
-        }
-
-        _tu = minimo;
-        _yo = maximo;
-    }
-
-    private void resolverDesdeLaDerecha( int first, int last ) {
-        if ( first > last ) {
-            _yo = _tu = 0;
-            return;
-        }
-
-        int puntos = 0;
-        int maximo = Integer.MIN_VALUE;
-        int minimo = Integer.MAX_VALUE;
-        for ( int i = last; i >= first; i-- ) {
-            puntos += cartas[i];
-            resolverDesdeLaIzquierdaCache( first, i - 1 );
-            int puntosDesdeLaIzquierdaYo = _yo;
-            int puntosDesdeLaIzquierdaTu = _tu;
-            resolverDesdeLaDerechaCache( first, i - 1 );
-            int puntosDesdeLaDerechaYo = _yo;
-            int puntosDesdeLaDerechaTu = _tu;
-            maximo = max( maximo, puntos + min( puntosDesdeLaIzquierdaTu, puntosDesdeLaDerechaTu ) );
-            minimo = min( minimo, max( puntosDesdeLaIzquierdaYo, puntosDesdeLaDerechaYo ) );
-        }
-
-        _tu = minimo;
-        _yo = maximo;
     }
 
     public void resolve(){
-        resolverDesdeLaIzquierdaCache( 0, cartas.length - 1 );
-        int puntosDesdeLaIzquierda = _yo;
-        resolverDesdeLaDerechaCache( 0, cartas.length - 1 );
-        int puntosDesdeLaDerecha = _yo;
-        puntos = max( puntosDesdeLaIzquierda, puntosDesdeLaDerecha );
+        construir();
+        int maxI = cacheIzq.get( 0, cartas.length - 1, MI_TURNO );
+        int maxD = cacheDer.get( 0, cartas.length - 1, MI_TURNO );
+        puntos = max( maxI, maxD );
     }
 
     public void reset(){
-        cacheDerecha = new Cache( cartas.length );
-        cacheIzquierda = new Cache( cartas.length );
+        cacheDer = new Cache( cartas );
+        cacheIzq = new Cache( cartas );
     }
 
     public String getOutput(){
