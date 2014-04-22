@@ -45,6 +45,35 @@ La solucion es el valor $\max (f_{\rightarrow}(1,n,yo), f_{\leftarrow}(1,n,yo))$
 \right. \\
 \end{align*}
 
+\newpage
+\subsubsection{4ta solucion}
+
+Defino la funcion $f(i,j)$ como la solucion optima usando de las cartas $i$ a $j$. 
+
+Esto es lo maximo que puedo agarrar con las cartas de la izquierda o de la derecha. 
+
+Supongamos que por la izquierda lo mejor que puedo hacer es usando las primeras $k$ cartas. Significa que el valor que puedo tomar es $\sum_{t=i}^{k} carta[t]$ m\'as lo que me deja tomar el otro jugador (que va a jugar optimamente) en la mitad $[k+1, j]$. Esto es el total que suma las cartas en la mitad ya dicha, menos $f(k+1, j)$, ya que es el valor optimo. La funci\'on queda asi: 
+
+\begin{eqnarray*}\hspace*{-4cm}
+  f(i,j) &=& \max\left( 
+      \max_{i \leq k \leq j}\left\{ \sum_{t=i}^k v[t] + \left( \sum_{t=k+1}^{j} v[t] - f(k+1,j) \right) \right\},  
+      \max_{i \leq k \leq j}\left\{ \sum_{t=k}^j v[t] + \left( \sum_{t=i}^{k-1} v[t] - f(i,k-1) \right) \right\} 
+    \right) \\
+    &=& \max \left(
+      \max_{i \leq k \leq j}\left\{ \sum_{t=i}^j v[t] - f(k+1,j) \right\},  
+      \max_{i \leq k \leq j}\left\{ \sum_{t=i}^j v[t] - f(i,k-1) \right\} 
+    \right) \\
+    &=& \sum_{t=i}^j v[t] + \max \left(
+      \max_{i \leq k \leq j}\left\{ - f(k+1,j) \right\},  
+      \max_{i \leq k \leq j}\left\{ - f(i,k-1) \right\} 
+    \right) \\
+    &=& \sum_{t=i}^j v[t] - \min \left(
+      \min_{i \leq k \leq j}\left\{ f(k+1,j) \right\},  
+      \min_{i \leq k \leq j}\left\{ f(i,k-1) \right\} 
+    \right) \\
+    &=& \sum_{t=i}^j v[t] - \min_{i \leq k \leq j}\left\{ \min \left( f(k+1,j), f(i,k-1) \right) \right\} 
+\end{eqnarray*}
+
 
 \subsection{Demostraci\'on}
 
