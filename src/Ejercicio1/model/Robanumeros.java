@@ -6,21 +6,28 @@ package Ejercicio1.model;
 public class Robanumeros {
 	private int[] cartas; /**< Cartas del juego. */
 	private int puntos; /**< Puntaje del jugador 1 del juego finalizado. */
+	private int[][] cache;
+	private boolean[][] validCache;
 
 	private int min( int a, int b ) { return a < b ? a : b; }
 	private int sum( int i, int j ) { int res = 0; for(int k = i; k <= j; k++) res += cartas[k]; return res; }
 
 	public Robanumeros( int[] cartas ){
 		this.cartas = cartas;
+		cache = new int[cartas.length][cartas.length];
+		validCache = new boolean[cartas.length][cartas.length];
 	}
 
 	private int f(int i, int j) {
 		if( i < j ){
+			if ( validCache[i][j] ) return cache[i][j];
 			int min_ij = Integer.MAX_VALUE;
 			for( int k = i; k <= j; k++ ){
 				min_ij = min(min_ij, min(f(i, k - 1), f(k + 1, j)));
 			}
-			return sum(i,j) - min_ij;
+			cache[i][j] = sum(i,j) - min_ij;
+			validCache[i][j] = true;
+			return cache[i][j];
 		}
 		if( i == j && i >= 0 && i < cartas.length ){
 			return cartas[i];
