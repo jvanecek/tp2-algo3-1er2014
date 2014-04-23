@@ -1,7 +1,8 @@
 package Ejercicio1.tests;
+
 import Ejercicio1.main.InstanceEj1;
-import org.junit.Test;
 import org.junit.Assert;
+import org.junit.Test;
 
 public class Exercise1Tests {
 	@Test

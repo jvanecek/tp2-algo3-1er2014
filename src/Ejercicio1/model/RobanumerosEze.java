@@ -14,7 +14,7 @@ public class RobanumerosEze {
 	private int max( int a, int b ) { return a < b ? b : a; }
 	private int min( int a, int b ) { return a < b ? a : b; }
 
-	public Robanumeros( int[] cartas ){
+	public RobanumerosEze( int[] cartas ){
 		this.cartas = cartas;
 		cacheIzq = new Cache( cartas );
 		cacheDer = new Cache( cartas );
