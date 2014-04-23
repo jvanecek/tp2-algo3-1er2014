@@ -45,6 +45,12 @@ public class PlanDeConstruccionOptimo {
         colocarCentrales(cantidadDeCentrales, pueblosDondeSeVanAConstruirCentrales, pueblos);
     }
 
+    /*
+        Como minimo va a disminuir en una central para colocar. En el caso que #centrales > #pueblos, para cuando puso
+        una central en cada uno.
+        O(#centrales) si #centrales < #pueblos
+        O(#pueblos) si #centrales >= #pueblos
+     */
     private void colocarCentrales(int centralesParaColocar, boolean[] pueblosDondeSeVanAConstruirCentrales, Pueblo[] pueblos) {
         if(centralesParaColocar == 0) return;
         if(tuberiasConstruidas.isEmpty()) return; // Estan todos cubiertos con centrales
@@ -60,6 +66,7 @@ public class PlanDeConstruccionOptimo {
             if(pueblosConCentrales.isEmpty()){
                 /*
                     Si no se construyo ninguna, entonces la pongo en cualquiera porque todas deben tener electricidad
+                    O(1)
                 */
                 pueblosDondeSeVanAConstruirCentrales[idPuebloPartida] = true;
                 return;
@@ -68,13 +75,15 @@ public class PlanDeConstruccionOptimo {
                     Si se construyo alguna en algun lado, pero ninguno de los dos pueblos tiene construida una central,
                     entonces no construyo en ninguna y termino, ya que construir una sola entre dos pueblos sin centrales,
                     no va a mejorar el riesgo, y como me queda una sola central, el riesgo no va a disminuir poniendola
-                    en otro lado
+                    en otro lado.
+                    O(1)
                 */
                 return;
             } else if(pueblosDondeSeVanAConstruirCentrales[idPuebloPartida] ^ pueblosDondeSeVanAConstruirCentrales[idPuebloDestino]){
                 /*
                     Si solo uno de los dos tiene central, entonces la pongo en el que no tiene y elimino la tuberia, ya que
                     van a estar los dos pueblos abastecidos
+                    O(1)
                  */
                 if(!pueblosDondeSeVanAConstruirCentrales[idPuebloPartida]){
                     pueblosDondeSeVanAConstruirCentrales[idPuebloPartida] = true;
@@ -89,6 +98,7 @@ public class PlanDeConstruccionOptimo {
             } else{
                 /*
                     Si los dos tienen central, elimino esta tuberia ya que los dos pueblos estan cubiertos, y prosigo
+                    O(1)
                  */
                 tuberiasConstruidas.remove(0);
                 colocarCentrales(centralesParaColocar, pueblosDondeSeVanAConstruirCentrales, pueblos);
@@ -97,6 +107,7 @@ public class PlanDeConstruccionOptimo {
 
             /*
                 Casos en que puedo poner mas de una central, simplemente pongo en los pueblos que no tienen.
+                O(1)
              */
 
             if(!pueblosDondeSeVanAConstruirCentrales[idPuebloPartida]){
