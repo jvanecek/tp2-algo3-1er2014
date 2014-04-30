@@ -4,55 +4,24 @@
 
 \subsection{Resoluci\'on}
 
-\subsubsection{1era solucion}
-En cada mano, agarrar la cantidad de cartas que sumen mas. 
+Defino la funcion $f(i,j)$ como la solucion \'optima usando de las cartas $i$ a $j$. Esto es, lo m\'aximo que puedo agarrar con las cartas de la izquierda (1*) o de la derecha (2*). 
 
-No funciona. Contraejemplo: $[-1, -6, -10]$
-  
-\subsubsection{2da solucion}
+\begin{enumerate}
+\item[(1*)] \label{x_izq} Supongamos que por la izquierda lo mejor que puedo hacer es usando las primeras $k$ cartas. Significa que el valor que puedo tomar es $\sum_{t=i}^{k} carta[t]$ m\'as lo que me deja tomar el otro jugador (que va a jugar \'optimamente) en la mitad $[k+1, j]$. Esto es el total que suma las cartas en dicha mitad, menos $f(k+1, j)$, ya que es el valor \'optimo y el puntaje que va a juntar el otro jugador. 
 
-Sea $v$ un vector de $n$ enteros que son los valores de las cartas, y dada la funcion recursiva: 
+\item[(2*)] \label{x_der} As\'i mismo, si lo mejor por derecha es usando $k$ cartas, entonces el puntaje \'optimo es la suma del valor de esas cartas ($\sum_{t=k}^{n} carta[t]$) m\'as lo que puedo tomar del lado $[i, k-1]$ despu\'es de que haya jugado el otro jugador. Y como este lo va a hacer \'optimamente, el valor que a m\'i me queda por elegir es $\sum_{t=i}^{k-1} carta[t] - f(i,k-1)$. 
+\end{enumerate}
 
-\begin{equation*}\hspace*{-2cm}
- f(i,j,p) = \max \left( 
-  \underbrace{ \max_{1\leq k \leq j}{ \left\{ \left( \sum_{t=i}^k v_t \right) p + f\left(k,j, (p+1)\bmod{2} \right) \right\} } }_{ \text{Lo mejor de la izquierda} },
-  \underbrace{ \max_{1\leq k \leq j}{ \left\{ \left( \sum_{t=k}^j v_t \right) p + f\left(i,k, (p+1)\bmod{2} \right) \right\} } }_{ \text{Lo mejor de la derecha} }
- \right) 
-\end{equation*}
+Es decir, que $f$ va a buscar el $k$ (entre $i$ y $j$) tal que maximiza el puntaje por izquierda (1*), y el de la derecha (2*), y se va a quedar con el m\'aximo de estos dos.
 
-La soluci\'on al problema es $f(1,n,0)$ donde el 3er par\'ametro puede ser 0 o 1, y representa al jugador
+Matem\'aticamente, la funci\'on queda definida de la siguiente manera (para cuando $i \leq j$): 
 
-% \left{ \right} 
+$$\hspace*{-1cm} f(i,j) = \max\left( 
+      \max_{i \leq k \leq j}\left\{ \sum_{t=i}^k v[t] + \left( \sum_{t=k+1}^{j} v[t] - f(k+1,j) \right) \right\},  
+      \max_{i \leq k \leq j}\left\{ \sum_{t=k}^j v[t] + \left( \sum_{t=i}^{k-1} v[t] - f(i,k-1) \right) \right\} 
+    \right) $$
 
-\subsubsection{3ra solucion}
-
-La solucion es el valor $\max (f_{\rightarrow}(1,n,yo), f_{\leftarrow}(1,n,yo))$ donde las funciones internas se definen como: 
-
-\begin{align*}\hspace*{-2cm}
- f_{\rightarrow}(i,j,p) &= 
- \left\{
-    \begin{array}{ll}
-	\displaystyle \max_{1\leq k\leq j} \left\{ \sum_{t=i}^k v[t] + \min( f_{\rightarrow}(k+1, j, p.next()), f_{\leftarrow}(k+1,j,p.next() ))  \right\}& \mbox{si } p = yo \\
-	\displaystyle \min_{1\leq k\leq j} \left\{ \max( f_{\rightarrow}(k+1, j, p.next()), f_{\leftarrow}(k+1,j,p.next() ) \right\} & \mbox{si } p = tu
-    \end{array}
-\right. \\
- f_{\leftarrow}(i,j,p) &= 
- \left\{
-    \begin{array}{ll}
-	\displaystyle \max_{1\leq k\leq j} \left\{ \sum_{t=k}^j v[t] + \min( f_{\rightarrow}(i, k-1, p.next()), f_{\leftarrow}(i, k-1,p.next() ))  \right\}& \mbox{si } p = yo \\
-	\displaystyle \min_{1\leq k\leq j} \left\{ \max( f_{\rightarrow}(i, k-1, p.next()), f_{\leftarrow}(i, k-1,p.next() ) \right\} & \mbox{si } p = tu
-    \end{array}
-\right. \\
-\end{align*}
-
-\newpage
-\subsubsection{4ta solucion}
-
-Defino la funcion $f(i,j)$ como la solucion optima usando de las cartas $i$ a $j$. 
-
-Esto es lo maximo que puedo agarrar con las cartas de la izquierda o de la derecha. 
-
-Supongamos que por la izquierda lo mejor que puedo hacer es usando las primeras $k$ cartas. Significa que el valor que puedo tomar es $\sum_{t=i}^{k} carta[t]$ m\'as lo que me deja tomar el otro jugador (que va a jugar optimamente) en la mitad $[k+1, j]$. Esto es el total que suma las cartas en la mitad ya dicha, menos $f(k+1, j)$, ya que es el valor optimo. La funci\'on queda asi: 
+Con $v$ el vector con los valores de las cartas. Si desarrollamos esta funci\'on nos queda la siguiente expresi\'on. 
 
 \begin{eqnarray*}\hspace*{-4cm}
   f(i,j) &=& \max\left( 
@@ -74,8 +43,15 @@ Supongamos que por la izquierda lo mejor que puedo hacer es usando las primeras 
     &=& \sum_{t=i}^j v[t] - \min_{i \leq k \leq j}\left\{ \min \left( f(k+1,j), f(i,k-1) \right) \right\} 
 \end{eqnarray*}
 
+Veamos que el caso base es cuando hay dos cartas solamente, y $f(i,j)$ queda como 
 
-\subsection{Demostraci\'on}
+\begin{eqnarray*}
+f(1,2) &=& v[1]+v[2] - \min( \min( f(2,2), f(1,0) ), \min( f(3,2), f(1,1) ) ) \\
+       &=& v[1]+v[2] - \min( f(2,2), f(1,1) ) \\
+       &=& v[1]+v[2] - \min( v[2], v[1] ) = \max( v[1], v[2] )
+\end{eqnarray*}
+
+Dado el caso base de las dos cartas, y la funci\'on recursiva $f(i,j)$, la funci\'on que devuelve la soluci\'on \'optima dadas las $n$ cartas es $f(1,n)$. 
 
 \subsection{An\'alisis de complejidad}
 
