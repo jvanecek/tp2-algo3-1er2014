@@ -1,8 +1,5 @@
 package Ejercicio1.model;
 
-import Otros.Ejercicio;
-import Otros.Utils;
-
 public class Cache {
     private class Elemento {
         public int min;

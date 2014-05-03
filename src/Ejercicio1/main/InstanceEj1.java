@@ -7,6 +7,7 @@ public class InstanceEj1 implements Ejercicio {
 	private int[] cartas;
 	private Robanumeros juego;
 
+	@Override
 	public void receiveInput( String input ){
 		boolean primero = true;
 		int indice = 0;
@@ -22,15 +23,18 @@ public class InstanceEj1 implements Ejercicio {
 		juego = new Robanumeros( cartas );
 	}
 
+	@Override
 	public void resolve(){
-		juego.calcularOptimoPuntaje();
+		juego.calcularSolucion();
 	}
 
+	@Override
 	public void reset(){
 		juego = new Robanumeros( cartas );
 	}
 
+	@Override
 	public String getOutput(){
-		return String.valueOf( juego.getOptimoPuntaje() );
+		return juego.obtenerSolucion();
 	}
 }
