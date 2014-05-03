@@ -14,7 +14,6 @@ public class Robanumeros {
 	private Jugada[][] jugadas; /**< Jugada elegida en cada paso. */
 
 	private int min( int a, int b ) { return a < b ? a : b; }
-	private int min( int a, int b, int c ) { return min( a, min( b, c ) ); }
 	private int sum( int i, int j ) { int res = 0; for(int k = i; k <= j; k++) res += cartas[k]; return res; }
 	
 	public Robanumeros( int[] cartas ){
@@ -30,8 +29,11 @@ public class Robanumeros {
 
 	public void calcularSolucion() {
 		int n = cartas.length;
-		for ( int i = 0; i < n; i++ )
+		for ( int i = 0; i < n; i++ ) {
 			cache[i][i] = cartas[i];
+			jugadas[i][i].desde = "izq";
+			jugadas[i][i].cartas = 1;
+		}
 
 		for ( int columna = 1; columna < n; columna++ ) {
 			for ( int diagonal = 0; diagonal < n - columna; diagonal++ ) {
@@ -45,7 +47,6 @@ public class Robanumeros {
 					puntos += cartas[k];
 					if ( k + 1 <= j ) a = cache[k + 1][j];
 					if ( k - 1 >= i ) b = cache[i][k - 1];
-					//min_ij = min( min_ij, a, b );
 					if ( min_ij < a && min_ij < b ) continue;
 					if ( a < b ) {
 						jugadas[i][j].desde = "izq";
@@ -74,11 +75,6 @@ public class Robanumeros {
 		
 		while ( i <= j ) {
 			turnos++;
-			
-			if ( i == j ) {
-				res.append( "izq 1\n" ); // Da lo mismo si es izquierda o derecha.
-				break;
-			}
 			
 			res.append( jugadas[i][j].desde + " "  + String.valueOf( jugadas[i][j].cartas ) + "\n" );
 			if ( jugadas[i][j].desde.equals( "izq" ) )

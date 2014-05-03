@@ -8,10 +8,12 @@ public class Main {
         BufferedReader reader = new BufferedReader( new InputStreamReader( System.in ) );
         String line;
         while ( (line = reader.readLine()) != null ) {
+            if ( line.equals( "" ) )
+                break;
             InstanceEj1 ej1 = new InstanceEj1();
             ej1.receiveInput( line );
             ej1.resolve();
-            System.out.println( ej1.getOutput() );
+            System.out.print( ej1.getOutput() );
         }
     }
 }
