@@ -68,7 +68,7 @@ public class Robanumeros {
 		int i = 0, j = cartas.length - 1;
 		int turnos = 0;
 		
-		int puntaje1 = 0, puntaje2 = 0;
+		int puntaje1, puntaje2;
 		puntaje1 = cache[i][j];
 		puntaje2 = sum( i, j ) - puntaje1;
 		
