@@ -1,14 +1,6 @@
 package Ejercicio1.model;
 
-/**
- * Created by juan on 21/04/14.
- */
 public class Robanumeros {
-	private class Jugada {
-		String desde;
-		int cartas;
-	}
-	
 	private int[] cartas; /**< Cartas del juego. */
 	private int[][] cache; /**< Cache de resultados. */
 	private Jugada[][] jugadas; /**< Jugada elegida en cada paso. */
@@ -16,6 +8,13 @@ public class Robanumeros {
 	private int min( int a, int b ) { return a < b ? a : b; }
 	private int sum( int i, int j ) { int res = 0; for(int k = i; k <= j; k++) res += cartas[k]; return res; }
 	
+	/**
+	 * Construye un nuevo Robanumeros
+	 * 
+	 * <p><b>Complejidad temporal:</b> O(n*n)</p>
+	 * 
+	 * @param cartas Cantidad de cartas del juego.
+	 */
 	public Robanumeros( int[] cartas ){
 		int n = cartas.length;
 		this.cartas = cartas;
@@ -27,12 +26,16 @@ public class Robanumeros {
 		}
 	}
 
+	/**
+	 * Calcula la solución al problema.
+	 * 
+	 * <p><b>Complejidad temporal:</b> O(n*n*n)</p>
+	 */
 	public void calcularSolucion() {
 		int n = cartas.length;
 		for ( int i = 0; i < n; i++ ) {
 			cache[i][i] = cartas[i];
-			jugadas[i][i].desde = "izq";
-			jugadas[i][i].cartas = 1;
+			jugadas[i][i].desdeIzquierda( 1 );
 		}
 
 		for ( int columna = 1; columna < n; columna++ ) {
@@ -49,12 +52,10 @@ public class Robanumeros {
 					if ( k - 1 >= i ) b = cache[i][k - 1];
 					if ( min_ij < a && min_ij < b ) continue;
 					if ( a < b ) {
-						jugadas[i][j].desde = "izq";
-						jugadas[i][j].cartas = k - i + 1;
+						jugadas[i][j].desdeIzquierda( k - i + 1 );
 						min_ij = a;
 					} else {
-						jugadas[i][j].desde = "der";
-						jugadas[i][j].cartas = j - k + 1;
+						jugadas[i][j].desdeDerecha( j - k + 1 );
 						min_ij = b;
 					}
 				}
@@ -63,6 +64,13 @@ public class Robanumeros {
 		}
 	}
 	
+	/**
+	 * Construye la secuencia de jugadas de la solución óptima.
+	 * 
+	 * <p><b>Complejidad temporal:</b> O(n)</p>
+	 *
+	 * @return La solución del problema formateada como pide el TP.
+	 */
 	public String obtenerSolucion() {
 		StringBuilder res = new StringBuilder();
 		
@@ -76,15 +84,14 @@ public class Robanumeros {
 		while ( i <= j ) {
 			turnos++;
 			
-			res.append( jugadas[i][j].desde + " "  + String.valueOf( jugadas[i][j].cartas ) + "\n" );
-			if ( jugadas[i][j].desde.equals( "izq" ) )
-				i += jugadas[i][j].cartas;
+			res.append( jugadas[i][j] ).append( "\n" );
+			if ( jugadas[i][j].desdeIzquierda() )
+				i += jugadas[i][j].cartas();
 			else
-				j -= jugadas[i][j].cartas;
+				j -= jugadas[i][j].cartas();
 		}
 		
 		return String.valueOf( turnos )  + " " + String.valueOf( puntaje1 ) + " " +
 				String.valueOf( puntaje2 ) + "\n" + res.toString();
 	}
 }
-
