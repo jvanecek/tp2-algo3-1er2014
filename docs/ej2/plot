@@ -1,0 +1,16 @@
+#!/usr/bin/gnuplot
+set terminal pdf
+set key off
+set xlabel "Tamaño de la entrada [cantidad de vértices]"
+
+set output "cuadratico.pdf"
+set title "Tiempo de ejecución"
+set ylabel "Tiempo de ejecución"
+set yrange [0:1500000]
+plot "salida.txt"
+
+set output "lineal.pdf"
+set title "Tiempo de ejecución dividido tamaño de la entrada"
+set ylabel "Tiempo de ejecución dividido tamaño de la entrada"
+set yrange [0:1400]
+plot "salida.txt" using 1:($2/$1)
