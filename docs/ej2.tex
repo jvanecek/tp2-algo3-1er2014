@@ -1,8 +1,61 @@
 \section{Problema 2: La centralita (de gas)}
 
 \subsection{Presentaci\'on del problema}
+En una regi\'on del pa\'is se est\'a considerando realizar una inversi\'on fuerte para proveer de gas natural
+a un conjunto de pueblos que no disponen a\'un de este recurso. Para ello, es posible ubicar centrales
+distribuidoras de gas en algunos de los pueblos y construir tuber\'ias para distribuir el gas de un pueblo a
+otro. Un pueblo ser\'a provisto de gas siempre que exista alg\'un camino por medio de tuber\'ia hasta alguna
+de las centrales (incluso si este camino pasa por otros pueblos). Debido al elevado costo de construcci\'on
+de las centrales distribuidoras, el presupuesto con el que se cuenta alcanza para construir a lo sumo k
+centrales.
+
+Por otro lado, los ingenieros a cargo de este proyecto saben que mientras m\'as larga sea una tuber\'ia
+construida entre dos pueblos, mayor es el riesgo de roturas y escapes de gas durante el trayecto (la
+longitud de una tuber\'ia que conecta dos pueblos est\'a dada por la distancia entre estos dos pueblos).
+En este sentido, se defini\'o el riesgo asociado a cada posible plan de construcci\'on como la mayor de las
+longitudes de las tuber\'ias construidas en dicho plan.
+
+Se pide escribir un algoritmo que determine un plan de construcci\'on de tuber\'ias y centrales (a lo sumo k
+centrales) de forma tal que ning\'un pueblo quede sin acceso al preciado recurso. El plan debe indicar en
+qu\'e pueblos se instalar\'an centrales y entre qu\'e pares de pueblos se construir\'an tuber\'ias de distribuci\'on de
+gas. El plan propuesto debe tener riesgo m\'inimo, y en caso de haber m\'as de un plan \'optimo, el algoritmo
+puede devolver cualquiera de ellos. Se pide que el algoritmo desarrollado tenga una complejidad temporal
+de peor caso de $O(n^2)$, donde $n$ es la cantidad de pueblos del problema.
 
 \subsection{Resoluci\'on}
+
+\subsection{Pseudoc\'odigo}
+\begin{verbatim}
+resolver()
+   construir agm del grafo
+   ordenar aristas del agm de mayor a menor
+   por cada arista del agm de mayor a menor y mientras haya centrales para colocar:
+      puebloA := el pueblo de un extremo de la arista
+      puebloB := el pueblo del otro extremo de la arista
+      si hay mas de una central para colocar:
+         colocar central en puebloA si no tiene
+         colocar central en puebloB si no tiene
+         eliminar arista del agm
+      sino:
+         si no hay centrales colocadas:
+            colocar central en puebloA
+         sino, si no hay central construida en puebloA ni en puebloB:
+            salir
+         sino, si sólo uno entre puebloA y puebloB tiene una central construida:
+            si puebloA no tiene central:
+               construir central en puebloA
+            sino:
+               construir central en puebloB
+            eliminar arista del agm
+         sino, los dos tienen central:
+            eliminar arista del agm
+
+\end{verbatim}
+
+Construír un AGM a partir de una matriz de adyacencia utilizando Prim es $O(n^2)$ \footnote{http://en.wikipedia.org/wiki/Prim\%27s\_algorithm\#Time\_complexity}.
+El AGM tiene $n-1$ aristas \footnote{http://en.wikipedia.org/wiki/Tree\_\%28graph\_theory\%29\#Definitions} (pues es un árbol), de modo que ordenar
+todas las artistas tiene, en el peor caso, una complejidad de $O(n^2)$, incluso podría ser $O(n \log n)$, pero aunque así no sea no va a cambiar el resultado.
+Por último, recorrer todas las aristas ordenadas es $O(n)$, y eliminar una arista del agm puede ser, según la implementación, entre $O(1)$ y $O(n)$, aún así, la complejidad de todo el ciclo no sería peor que $O(n^2)$. Sumando todo obtenemos una complejidad del algoritmo de $O(n^2)$.
 
 \subsection{Demostraci\'on}
 
@@ -11,3 +64,10 @@
 \subsection{Test de complejidad}
 
 \subsection{Compilar y ejecutar}
+Desde el directorio src/Ejercicio2:
+\begin{itemize}
+   \item {\bf Compilar:} ./ej1 make
+   \item {\bf Ejecutar:} ./ej1
+   \item {\bf Correr casos de test:} ./ej1 tests
+   \item {\bf Benchmarks:} ./ej1 bench
+\end{itemize}
