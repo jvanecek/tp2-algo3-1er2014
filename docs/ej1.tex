@@ -107,6 +107,42 @@ calcular( cartas : array )
    devolver lista de jugadas := reconstruir jugadas a partir de jugadas[0][n-1]
 \end{verbatim}
 
+\subsection{Casos de Test}
+
+\subsubsection{Elige soluciones intermedias no ``\'optimas''}
+Probamos con las cartas 1, -10, 2 y 3. Para poder ganar se debe sólo tomar el 3, en lugar del 2 y 3 que nos daría un mayor puntaje parcial.
+
+\begin{itemize}
+   \item Si tomara el 1 el otro eligiría el 2 y el 3 y nos quedaría el -10 y perderíamos 5 a -9.
+   \item Si tomara el 2 y 3 el otro eligiría el 1 y tendríamos luego que tomar el -10 y perderíamos 1 a -5.
+   \item Si toma sólo el 3 el otro puede elegir tanto el 1 como el 2, pues nosotros eligiríamos la otra carta
+      y al oponente sólo le quedaría el -10 y ganaríamos. Por lo tanto el oponente tiene que elegir las 3 cartas
+      que quedan, para maximizar su puntaje.
+\end{itemize}
+
+\subsubsection{Elige cartas negativas para aumentar la diferencia de puntos}
+Probamos con las cartas 10, -10, 2 y 3. La idea es simplemente ver que toma cartas negativas si
+eso lleva a una solución óptima. En este caso tiene que tomar todas las cartas, si tomara sólo el 3 el oponente podría sumar
+2 puntos y ganar sólo por un punto de diferencia, al tomar todas las cartas se asegura ganar por 5 puntos.
+
+\begin{itemize}
+   \item Si tomara el 10 el otro eligiría 2 y 3 y nos quedaría el -10, perdiendo 5 a 0.
+   \item Si tomara el 2 y el 3 el otro eligiría el 10 y nosotros el -10, perdiendo 10 a -5.
+   \item Si tomara 10 y -10 el otro eligiría 2 y 3 y perderíamos 5 a 0.
+   \item Si tomara 2, 3 y -10 perderíamos 10 a -5.
+   \item Si tomara sólo el 3 el otro eligiría lo que queda y llegaría a 2, ganando 3 a 2.
+   \item Si toma todas las cartas se gana 5 a 0.
+\end{itemize}
+
+\subsubsection{Pierde por lo menos posible}
+Probamos con las cartas 1, -10 y 1. Si no se puede ganar, por lo menos se pierda por la menor cantidad de puntos.
+
+\begin{itemize}
+   \item Si tomara sólo cualquiera de los unos, el oponente eligiría el 1 restante y a nosotros nos quedaría el -10,
+      perdiendo 1 a -9 (10 puntos de diferencia)
+   \item Si tomara el 1 y el -10 perdería 1 a -9 (10 puntos de diferencia).
+   \item Si toma todas las cartas pierde 0 a -8 (8 puntos de diferencia).
+\end{itemize}
 
 \subsection{An\'alisis de complejidad}
 Son simplemente 3 ciclos anidados que como mucho recorren $n$ elementos, el resto de las operaciones es $O(1)$, por
@@ -125,11 +161,8 @@ También graficamos el tiempo de ejecución dividido el tamaño de la entrada al
 %\includegraphics{ej1/cubico.pdf}
 %\includegraphics{ej1/lineal.pdf}
 
-
 \subsection{Compilar y ejecutar}
-
 Desde el directorio src/Ejercicio1:
-
 \begin{itemize}
    \item {\bf Compilar:} ./ej1 make
    \item {\bf Ejecutar:} ./ej1
