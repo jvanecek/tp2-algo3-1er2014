@@ -67,6 +67,20 @@ todas las artistas tiene, en el peor caso, una complejidad de $O(n^2)$, incluso 
 Por último, recorrer todas las aristas ordenadas es $O(n)$, y eliminar una arista del agm puede ser, según la implementación, entre $O(1)$ y $O(n)$, aún así, la complejidad de todo el ciclo no sería peor que $O(n^2)$. Sumando todo obtenemos una complejidad del algoritmo de $O(n^2)$.
 
 \subsection{Test de complejidad}
+Realizamos unas mediciones del tiempo de ejecución para luego graficarlas y observar la complejidad del algoritmo. El tamaño de la entrada es, basicamente,
+la cantidad de vértices, pues el grafo siempre es completo. La cantidad de centrales no varía demasiado el tiempo de ejecución, y no varía en nada la ``forma''
+de la curva. Para probar dejamos fija la cantidad de centrales y probamos para grafos cada vez más grandes, y luego aumentamos la cantidad de centrales y volvíamos a probar. Como la ``forma'' de la curva no varía, simplemente graficamos para una cantidad fija de centrales. No hay mejores y peores casos, pues siempre es un grafo completo del cual dejamos sólo $n-1$ aristas.
+
+Para observar que realmente es cuadrático hicimos un segundo gráfico pero dividiendo el tiempo
+de ejecución por el tamaño de la entrada. Como se puede observar, es lineal.
+
+Sí se puede observar un quiebre a partir de un determinado número de casos, lo cual atribuímos basicamente a que el procesador cambia la velocidad después de
+un tiempo de utilizar el 100\% de CPU. Dado que en los laboratorios no poseemos el permiso de modificar el administrador de velocidad de CPU no hubo forma
+de resolverlo. Pero ya en otros casos tuvimos el mismo comportamiento y se solucionó reemplazando la política de ``ondemand'' a ``performance''.
+
+\includegraphics[width=\textwidth]{ej2/cuadratico.pdf}
+\includegraphics[width=\textwidth]{ej2/lineal.pdf}
+
 
 \subsection{Compilar y ejecutar}
 Desde el directorio src/Ejercicio2:
