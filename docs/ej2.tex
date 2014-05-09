@@ -23,43 +23,48 @@ puede devolver cualquiera de ellos. Se pide que el algoritmo desarrollado tenga 
 de peor caso de $O(n^2)$, donde $n$ es la cantidad de pueblos del problema.
 
 \subsection{Resoluci\'on}
+La resolución se reduce, simplemente, a obtener un AGM del grafo original y luego particionarlo eliminando las aristas de mayor peso (para eso colocamos centrales en ambas componentes conexas).
 
 \subsection{Pseudoc\'odigo}
 \begin{verbatim}
-resolver()
-   construir agm del grafo
-   ordenar aristas del agm de mayor a menor
-   por cada arista del agm de mayor a menor y mientras haya centrales para colocar:
-      puebloA := el pueblo de un extremo de la arista
-      puebloB := el pueblo del otro extremo de la arista
-      si hay mas de una central para colocar:
-         colocar central en puebloA si no tiene
-         colocar central en puebloB si no tiene
+construir agm del grafo
+ordenar aristas del agm de mayor a menor
+por cada arista del agm de mayor a menor y mientras haya centrales para colocar:
+   puebloA := el pueblo de un extremo de la arista
+   puebloB := el pueblo del otro extremo de la arista
+   si hay mas de una central para colocar:
+      colocar central en puebloA si no tiene
+      colocar central en puebloB si no tiene
+      eliminar arista del agm
+   sino:
+      si no hay centrales colocadas:
+         colocar central en puebloA
+      sino, si no hay central construida en puebloA ni en puebloB:
+         salir
+      sino, si sólo uno entre puebloA y puebloB tiene una central construida:
+         si puebloA no tiene central:
+            construir central en puebloA
+         sino:
+            construir central en puebloB
          eliminar arista del agm
-      sino:
-         si no hay centrales colocadas:
-            colocar central en puebloA
-         sino, si no hay central construida en puebloA ni en puebloB:
-            salir
-         sino, si sólo uno entre puebloA y puebloB tiene una central construida:
-            si puebloA no tiene central:
-               construir central en puebloA
-            sino:
-               construir central en puebloB
-            eliminar arista del agm
-         sino, los dos tienen central:
-            eliminar arista del agm
-
+      sino, los dos tienen central:
+         eliminar arista del agm
 \end{verbatim}
 
+\subsection{Demostraci\'on}
+Un AGM es también lo que se conoce como un ``Minimium Bottleneck Spanning Tree'', es decir, un AGM tiene la propiedad de que el costo máximo de sus aristas
+es el mínimo posible \footnote{http://en.wikipedia.org/wiki/Minimum\_spanning\_tree\#Minimum\_bottleneck\_spanning\_tree}.
+
+Además, por la propiedad de corte \footnote{http://en.wikipedia.org/wiki/Minimum\_spanning\_tree\#Cut\_property} sabemos que si partimos un AGM quitando una arista
+tenemos dos componentes conexas, que la arista de menor peso que las une es la que acabamos de quitar (no podría ser otra, porque sino esa sería la que estuviese
+en el AGM). De modo que si particionamos el AGM en las aristas de mayor peso (colocando una central de cada lado de la arista) estamos eliminando la mayor arista
+del AGM que además es la menor arista que podía unir las dos componentes conexas. Es decir que reducimos el costo del resultado y además sabemos que es una decisión óptima, porque no hay ningún otro AGM que tenga una arista de menor peso entre esas dos componentes conexas, con lo cual sacamos la arista ``óptima'' que además era la más pesada.
+
+\subsection{An\'alisis de complejidad}
 Construír un AGM a partir de una matriz de adyacencia utilizando Prim es $O(n^2)$ \footnote{http://en.wikipedia.org/wiki/Prim\%27s\_algorithm\#Time\_complexity}.
 El AGM tiene $n-1$ aristas \footnote{http://en.wikipedia.org/wiki/Tree\_\%28graph\_theory\%29\#Definitions} (pues es un árbol), de modo que ordenar
 todas las artistas tiene, en el peor caso, una complejidad de $O(n^2)$, incluso podría ser $O(n \log n)$, pero aunque así no sea no va a cambiar el resultado.
 Por último, recorrer todas las aristas ordenadas es $O(n)$, y eliminar una arista del agm puede ser, según la implementación, entre $O(1)$ y $O(n)$, aún así, la complejidad de todo el ciclo no sería peor que $O(n^2)$. Sumando todo obtenemos una complejidad del algoritmo de $O(n^2)$.
-
-\subsection{Demostraci\'on}
-
-\subsection{An\'alisis de complejidad}
 
 \subsection{Test de complejidad}
 
