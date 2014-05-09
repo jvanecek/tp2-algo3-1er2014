@@ -2,13 +2,76 @@
 
 \subsection{Presentaci\'on del problema}
 
+La Matrix es un juego que consite de participantes en un tablero cuadrado. Cada casillero contiene un resorte que le permite al jugador saltar a otro casillero en direcci\'on vertical u horizontal dependiendo del valor de salto del resorte.
+
+El problema esta en buscar la cantidad m\'inima de saltos que puede hacer un participante desde un casillero origen a otro destino. Ademas cada participante tiene una cantidad de potencias extra que puede usar para llegar a casilleros mas alejados.
+
 \subsection{Resoluci\'on}
+
+Para resolver este problema se plante\'o hacer un grafo \textit{tridimensional} (explicado m\'as adelante). 
+
+Al plantear el grafo (dirigido) de casilleros como nodos conectados a sus posibles casilleros de saltos hac\'ia f\'acil la busqueda de camino m\'inimo entre origen y destino, pero se comlpicaba el c\'alculo del uso de las potencias, ya que era muy costoso saber cuantas potencias se habian usado.
+
+Es por eso que se plante\'o finalmente uno tridimensional. Este incluye informaci\'on de las potencias en s\'i mismo.
+El grafo dirigido tridimensional consiste en repetir el grafo de casilleros como nodos y conexiones como aristas $k$ cantidad de veces, donde $k =$ n\'umero de potencias.
+Es decir, cuando se toma una decisi\'on que no requiere potencias, me quedo en la misma matriz, pero cuando uso alguna potencia, salto a otra matriz dependiendo de la cantidad de potencias utilizadas.
+No puedo saltar de una matriz con mayor $k$ a una de menor.
+Entonces obtengo un grafo dirigido de $(n^2)*k$ nodos, donde una misma posici\'on esta repetida $k$ veces.
+
+\subsubsection{Algoritmo}
+
+Como cada arista representa un salto, todas tienen el mismo costo. Por eso, adaptamos el problema a buscar el camino m\'inimo con el algoritmo de BFS en un grafo dirigido, empezando desde el casillero origen.
+
+\begin{verbatim}
+LaMatrix(Tablero inicio fin potencia)
+    niveles = { inicio : 0 } //diccionario con la clave inicio y 0 como significado
+    anterior = { inicio : NULL } //diccionario, clave inicio y NULL como significado
+    i = 1
+    frontera = [inicio]
+    while(frontera){
+        siguiente = []
+        for x in frontera {
+            for y in vecinos(x){ //vecinos es un arreglo del alcance que tiene x
+                if !nivel.estaDefinido(y){
+                    nivel[y] = i
+                    anterior[y] = x
+                    siguiente.agregar(y)
+                }
+            }
+        }
+        frontera = siguitente
+        i++
+        }
+
+    saltosAfin = niveles.significado(fin) //cantidad de saltos
+    secuenciaDeSaltos = anterior.dameSecuencia(fin) //devuelve el camino desde el inicio hasta en fin.
+    return (saltosAfin, secuenciaDeSaltos)
+\end{verbatim}
+
 
 \subsection{Demostraci\'on} 
 
 \subsection{An\'alisis de complejidad}
 
-\subsection{Test de complejidad}
+El algoritmo es principalmente una busqueda en anchura, y esta tiene complejidad temporal de $O(V + E)$ donde $V$ son los nodos y $E$ las aristas.
+En nuestro caso tenemos $(n^2)*k$ nodos y en caso m\'aximo en que todos los nodos esten conectados a sus posibles lugares de salto serian $(n^2)*2(n-1)*k$ ya que hay $n^2$ nodos con $n-1$ conexiones m\'aximas en cada direcci\'on (vertical u horizontal) por cada nivel $k$. Esto dar\'ia acotado superiormente $(n^3)*k$.
+Es decir que el peor caso ser\'ia de $O((n^2)*k + (n^3)*k)$ que es lo mismo que $O((n^3)*k)$.
 
-\subsection{Compilar y ejecutar}
+%\subsection{Test de complejidad}
+
+%\subsection{Compilar y ejecutar}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
