@@ -2,7 +2,8 @@
 NRO=${0:(-1)}
 #CP="/usr/share/java/junit.jar:."
 CP="../hamcrest-core.jar:../junit.jar:."
-JAVAC_OPTS="-source 1.7 -g"
+#JAVAC_OPTS="-source 1.7 -g"
+JAVAC_OPTS="-g"
 JAVA_OPTS_TESTS="-ea"
 
 function make() {
