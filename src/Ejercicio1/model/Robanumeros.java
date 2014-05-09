@@ -44,7 +44,6 @@ public class Robanumeros {
 				int j = columna + diagonal;
 				int min_ij = Integer.MAX_VALUE;
 				int puntos = 0;
-				int x = i, y = j;
 				for ( int k = i; k <= j; k++ ) {
 					int a = 0, b = 0;
 					puntos += cartas[k];
