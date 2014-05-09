@@ -1,0 +1,15 @@
+#!/usr/bin/gnuplot
+set terminal pdf
+set key off
+
+set output "cubico.pdf"
+set xlabel "Tamaño de la Entrada [cartas]"
+set ylabel "Tiempo de Ejecución [ns]"
+set title "Tiempo de ejecución"
+plot "bench.txt" using 1:2
+
+set output "lineal.pdf"
+set title "Tiempo de ejecución dividido tamaño de la entrada al cuadrado"
+set yrange [0:1500]
+set ylabel "ns / (cartas*cartas)"
+plot "bench.txt" using 1:($2/$1/$1)
