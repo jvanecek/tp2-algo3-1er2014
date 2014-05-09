@@ -1,6 +1,35 @@
 \section{Problema 1: Roban\'umeros}
 
 \subsection{Presentaci\'on del problema}
+El Roban\'umeros es un juego de cartas para dos jugadores. Al iniciar se dispone sobre la mesa una secuencia
+de cartas boca arriba. Cada carta tiene dibujado un n\'umero entero (no necesariamente positivo). El
+Roban\'umeros se juega por turnos, alternando un turno para cada jugador. En su turno el jugador debe
+elegir uno de los dos extremos (izquierdo o derecho) de la secuencia que actualmente est\'aen la mesa y
+robar cartas comenzando por dicho extremo. Puede robar la cantidad de cartas que quiera pero tiene que
+robar cartas adyacentes a partir del extremo elegido. Por ejemplo, si las cartas en la mesa son
+
+$$ 2, ~ -4, ~ 6, ~ 1, ~ 9, ~ -10 $$
+
+Entonces el jugador podr\'ia robar las cartas $2, ~ -4, ~ 6$ empezando por la izquierda por ejemplo o bien
+las cartas $-10, ~ 9, ~ 1, ~ 6$ empezando desde la derecha, pero no podr\'ia robar las cartas $2, ~ 6, ~ 1$
+ya que se estar\'ia salteando la carta $-4$. Tampoco ser\'ia posible robar las cartas $6, ~ 1, ~ 9$ ya que si
+bien son adyacentes, la secuencia no se inicia en alguno de los extremos.
+
+
+En su turno, el jugador debe robar al menos una carta y el juego termina cuando ya no quedan cartas
+en la mesa. En este momento, cada jugador suma los valores de las cartas que rob\'o y el que obtenga una
+suma mayor gana el juego.
+
+Mingo y An\'ibal son dos jugadores expertos de Roban\'umeros y nos retaron a escribir un algoritmo que
+juegue tan bien como ellos. Es decir, tenemos que escribir un algoritmo que juegue en forma \'optima a
+este juego suponiendo que su contrincante es tan inteligente como \'el. El programa a implementar debe
+tomar una secuencia inicial de cartas y debe indicar qu\'e cartas robar\'ia Mingo y An\'ibal en cada turno,
+asumiendo que ambos juegan de manera \'optima a este juego. En este contexto, decimos que un jugador
+juega de manera \'optima si la diferencia de puntos obtenida a su favor es la mayor diferencia que se puede
+obtener frente a un oponente que juega tambi\'en de manera \'optima cada situaci\'on que se le deje. En caso
+de haber m\'as de una soluci\'on \'optima, el algoritmo puede devolver cualquiera de ellas. Se pide que el
+algoritmo desarrollado tenga una complejidad temporal de peor caso de $O(n^3)$, donde $n$ es la cantidad
+de cartas en la secuancia inicial.
 
 \subsection{Resoluci\'on}
 
