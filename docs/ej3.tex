@@ -61,17 +61,169 @@ Es decir que el peor caso ser\'ia de $O((n^2)*k + (n^3)*k)$ que es lo mismo que 
 
 %\subsection{Compilar y ejecutar}
 
+\subsection{C\'odigo de fuente}
+\begin{verbatim}
+public class Tablero {
+    private int[][][] superMatrix; //array de matrices, la posicion en el primer arreglo son los K usados.
+    private int n;
+    private int poderes;
 
+    public Tablero(int n, int k, int[][] Matrix)
+    {
+        this.n = n;
+        this.poderes = k;
 
+        superMatrix = new int[k+1][][];
+        for(int i = 0; i <= k; i++)
+        {
+            superMatrix[i] = Matrix;
+        }
+    }
 
+    public List<Tripla> vecinos (int k, int x, int y)
+    {
+        int valor = this.superMatrix[k][x-1][y-1]; //x-1 y-1
 
+        List<Tripla> vs = new ArrayList<Tripla>();
+        List<Tripla> horizontales = valoresHorizontales(k,x,y,valor);
+        List<Tripla> verticales = valoresVerticales(k,x,y,valor);
 
+        vs.addAll(horizontales);
+        vs.addAll(verticales);
+        return vs;
+    }
 
+    private List<Tripla> valoresHorizontales (int k, int x, int y, int valor)
+    {
+        List<Tripla> vs = new ArrayList<Tripla>();
+        Tripla v = new Tripla(k,x,y);
+        //valores horizontales
+        for (int i = 0; i <= valor; i++)
+        {
+            if ((x+i) <= this.n)
+            {
+                v.setSecond((x+i));
+                vs.add(v);
+            }
+            if ((x-i) > 0)
+            {
+                v.setSecond((x-i));
+                vs.add(v);
+            }
+        }
+        //valores horizontales con poder
+        if((this.poderes-k)>0) //si quedan poderes entonces...
+        {
+            for (int i = 1; i <= (this.poderes - k); i++)
+            {
+                if ((x + valor + i) <= this.n)
+                {
+                    v.setFirst(k + i);
+                    v.setSecond(x + valor + i);
+                    vs.add(v);
+                }
+                if ((x - valor - i) > 0)
+                {
+                    v.setFirst(k + i);
+                    v.setSecond(x - valor - i);
+                    vs.add(v);
+                }
+            }
+        }
+        return vs;
+    }
 
+    private List<Tripla> valoresVerticales (int k, int x, int y, int valor)
+    {
+        List<Tripla> vs = new ArrayList<Tripla>();
+        Tripla v = new Tripla(k,x,y);
+        //valores verticales
+        for (int i = 0; i <= valor; i++)
+        {
+            if ((y+i) <= this.n)
+            {
+                v.setThird(y+i);
+                vs.add(v);
+            }
+            if ((y-i) > 0)
+            {
+                v.setThird(y-i);
+                vs.add(v);
+            }
+        }
+        //valores verticales con poder
+        if((this.poderes-k)>0) //si quedan poderes entonces...
+        {
+            for (int i = 1; i <= (this.poderes - k); i++)
+            {
+                if ((y + valor + i) <= this.n)
+                {
+                    v.setFirst((k + i));
+                    v.setThird(y + valor + i);
+                    vs.add(v);
+                }
+                if ((y - valor - i) > 0)
+                {
+                    v.setFirst((k + i));
+                    v.setThird(y - valor - i);
+                    vs.add(v);
+                }    
+            }
+        }
+        return vs;
+    }
+}
+-------------------------
 
+public class Jugador {
+    private HashMap<Dupla, Integer> niveles; //diccionario que contiene a cuantos 
+                                             saltos o nivel esta tal casillero.
+    private HashMap<Dupla, Integer> poderesUsadosHastaAqui; //diccionario que contiene 
+                                                             a cuantos poderes se usaron hasta el casillero.
+    private HashMap<Tripla, Tripla> anterior; //diccionario que dado un casillero 
+                                                devuelve cual es el anterior en su camino minimo desde el inicio.
+    private Dupla inicio;
+    private Dupla fin;
+    private Tablero tablero;
 
+    public Jugador(Dupla inicio, Dupla fin, Tablero tablero)
+    {
+        this.inicio = inicio;
+        this.fin = fin;
+        this.tablero = tablero;
+        this.niveles = new HashMap<Dupla, Integer>();
+        this.poderesUsadosHastaAqui = new HashMap<Dupla, Integer>();
+        this.anterior = new HashMap<Tripla, Tripla>();
+    }
 
-
-
-
-
+    public void resolver() //USA EL ALGORITMO DE BFS
+    {
+        this.niveles.put(this.inicio,0);
+        Tripla inicioT = this.inicio.duplaToTripla(0);
+        this.anterior.put(inicioT, null);
+        int nivel = 1;
+        ArrayList<Tripla> frontera = new ArrayList<Tripla>();
+        frontera.add(inicioT);
+        while(!frontera.isEmpty())
+        {
+            ArrayList<Tripla> siguiente = new ArrayList<Tripla>();
+            for(Tripla t : frontera)
+            {
+                for (Tripla v : tablero.vecinos(t.getFirst(),t.getSecond(),t.getThird()))
+                {
+                    Dupla v2 = v.triplaToDupla();
+                    if(!this.niveles.containsKey(v2))
+                    {
+                        this.niveles.put(v2,nivel);
+                        this.anterior.put(v,t);
+                        siguiente.add(v);
+                    }
+                }
+            }
+            frontera.clear();
+            frontera.addAll(siguiente);
+            nivel = nivel+1;
+        }
+    }
+}
+\end{verbatim}
