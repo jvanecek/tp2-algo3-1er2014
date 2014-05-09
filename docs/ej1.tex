@@ -7,9 +7,9 @@
 Defino la funcion $f(i,j)$ como la solucion \'optima usando de las cartas $i$ a $j$. Esto es, lo m\'aximo que puedo agarrar con las cartas de la izquierda (1*) o de la derecha (2*). 
 
 \begin{enumerate}
-\item[(1*)] \label{x_izq} Supongamos que por la izquierda lo mejor que puedo hacer es usando las primeras $k$ cartas. Significa que el valor que puedo tomar es $\sum_{t=i}^{k} carta[t]$ m\'as lo que me deja tomar el otro jugador (que va a jugar \'optimamente) en la mitad $[k+1, j]$. Esto es el total que suma las cartas en dicha mitad, menos $f(k+1, j)$, ya que es el valor \'optimo y el puntaje que va a juntar el otro jugador. 
+\item[(1*)] \label{x_izq} Supongamos que por la izquierda lo mejor que puedo hacer es usando las primeras $k$ cartas. Significa que el valor que puedo tomar es $\sum_{t=i}^{k} carta[t]$ m\'as lo que me deja tomar el otro jugador (que va a jugar de manera \'optima) en la mitad $[k+1, j]$. Esto es el total que suma las cartas en dicha mitad, menos $f(k+1, j)$, ya que es el valor \'optimo y el puntaje que va a juntar el otro jugador. 
 
-\item[(2*)] \label{x_der} As\'i mismo, si lo mejor por derecha es usando $k$ cartas, entonces el puntaje \'optimo es la suma del valor de esas cartas ($\sum_{t=k}^{n} carta[t]$) m\'as lo que puedo tomar del lado $[i, k-1]$ despu\'es de que haya jugado el otro jugador. Y como este lo va a hacer \'optimamente, el valor que a m\'i me queda por elegir es $\sum_{t=i}^{k-1} carta[t] - f(i,k-1)$. 
+\item[(2*)] \label{x_der} Asimismo, si lo mejor por derecha es usando $k$ cartas, entonces el puntaje \'optimo es la suma del valor de esas cartas ($\sum_{t=k}^{n} carta[t]$) m\'as lo que puedo tomar del lado $[i, k-1]$ despu\'es de que haya jugado el otro jugador. Y como este lo va a hacer \'optimamente, el valor que a m\'i me queda por elegir es $\sum_{t=i}^{k-1} carta[t] - f(i,k-1)$. 
 \end{enumerate}
 
 Es decir, que $f$ va a buscar el $k$ (entre $i$ y $j$) tal que maximiza el puntaje por izquierda (1*), y el de la derecha (2*), y se va a quedar con el m\'aximo de estos dos.
@@ -21,7 +21,9 @@ $$\hspace*{-1cm} f(i,j) = \max\left(
       \max_{i \leq k \leq j}\left\{ \sum_{t=k}^j v[t] + \left( \sum_{t=i}^{k-1} v[t] - f(i,k-1) \right) \right\} 
     \right) $$
 
-Con $v$ el vector con los valores de las cartas. Si desarrollamos esta funci\'on nos queda la siguiente expresi\'on. 
+Para $i > j$ $f(i,j) = 0$.
+$v$ el vector con los valores de las cartas.
+Si desarrollamos esta funci\'on nos queda la siguiente expresi\'on. 
 
 \begin{eqnarray*}\hspace*{-4cm}
   f(i,j) &=& \max\left( 
@@ -43,18 +45,119 @@ Con $v$ el vector con los valores de las cartas. Si desarrollamos esta funci\'on
     &=& \sum_{t=i}^j v[t] - \min_{i \leq k \leq j}\left\{ \min \left( f(k+1,j), f(i,k-1) \right) \right\} 
 \end{eqnarray*}
 
-Veamos que el caso base es cuando hay dos cartas solamente, y $f(i,j)$ queda como 
+%Veamos que el caso base es cuando hay dos cartas solamente, y $f(i,j)$ queda como 
+Veamos un ejemplo con dos cartas
 
 \begin{eqnarray*}
 f(1,2) &=& v[1]+v[2] - \min( \min( f(2,2), f(1,0) ), \min( f(3,2), f(1,1) ) ) \\
-       &=& v[1]+v[2] - \min( f(2,2), f(1,1) ) \\
-       &=& v[1]+v[2] - \min( v[2], v[1] ) = \max( v[1], v[2] )
+       &=& v[1]+v[2] - \min( \min( f(2,2), 0 ), \min( 0, f(1,1) ) ) \\
+       &=& v[1]+v[2] - \min\{ f(2,2), f(1,1), 0 \} = \\
+		 &=& v[1]+v[2] - \min\{ v[2], v[1], 0 \}
 \end{eqnarray*}
 
-Dado el caso base de las dos cartas, y la funci\'on recursiva $f(i,j)$, la funci\'on que devuelve la soluci\'on \'optima dadas las $n$ cartas es $f(1,n)$. 
+Si $v[1] \ge 0$ y $v[2] \ge 0$ entonces $v[1]+v[2] - \min\{v[2],v[1],0\} = v[1]+v[2]$ que es el máximo que se puede obtener.
+Si $v[1] < 0$ entonces $v[1]+v[2] - \min\{v[2],v[1],0\} = v[1]+v[2]-v[1]=v[2]$,
+que es positivo y es el óptimo. Lo mismo para $v[2] < 0$.
+Si $v[1] < 0$ y $v[2] < 0$ entonces $v[1]+v[2] - \min\{v[2],v[1],0\} = v[1] ~ o ~ v[2]$, dependiendo cuál sea el máximo, que es, claramente la solución
+óptima, ya que obtenemos el mejor puntaje posible (agarrar la carta más grande).
+
+%Dado el caso base de las dos cartas, y la funci\'on recursiva $f(i,j)$, la funci\'on que devuelve la soluci\'on \'optima dadas las $n$ cartas es $f(1,n)$. 
+\subsection{Pseudoc\'odigo}
+Para resolverlo de manera iterativa y construyendo la solución desde ``abajo'' se recorre una matriz
+en diagonal desde la diagonal principal, donde cada elemento (i,j) representa el puntaje obtenido
+al tomar desde la carta i hasta la j de manera óptima. Al finalizar de construir la matríz el puntaje
+óptimo se encuentra en la celda (0,n-1)
+Para construir cada celda (i,j) necesitamos los elementos:
+
+\begin{itemize}
+   \item $(k+1,j) \forall i \le k < j$
+   \item $(i,k-1) \forall i < k \le j$
+\end{itemize}
+
+Esto es así porque necesitamos saber qué puntaje obtendría el otro jugador si le dejamos esas cartas,
+de manera de poder dejarle el menor puntaje posible.
+
+\begin{verbatim}
+calcular( cartas : array )
+   n := cantidad de elementos en el arreglo
+   cache := array(n*n)
+   jugadas := array(n*n)
+   para todo 0 <= i < n
+      cache[i][i] := cartas[i]
+      jugadas[i][i] := Jugada<izquierda,1 carta>
+
+   para 1 <= columna < n
+      para 0 <= diagonal < n - columna
+         i := diagonal
+         j := columna + diagonal
+         min_ij := +Infinito
+         puntos := 0
+         para i <= k <= j
+            a := cache[k+1][j] o 0 si k+1 > j
+            b := cache[i][k-1] o 0 si k-1 < j
+            si b < min_ij o a < min_ij
+               si a < b
+                  jugadas[i][j] = Jugada<izquierda,k-1+1 cartas>
+                  min_ij = a
+               sino
+                  jugadas[i][j] = Jugada<derecha,j-k+1 cartas>
+                  min_ij = b
+            cache[i][j] = puntos - min_ij
+   devolver optimo puntaje := cache[0][n-1]
+   devolver lista de jugadas := reconstruir jugadas a partir de jugadas[0][n-1]
+\end{verbatim}
+
 
 \subsection{An\'alisis de complejidad}
+Son simplemente 3 ciclos anidados que como mucho recorren $n$ elementos, el resto de las operaciones es $O(1)$, por
+ende la complejidad es $O(n^3)$.
 
 \subsection{Test de complejidad}
 
 \subsection{Compilar y ejecutar}
+
+Desde el directorio src/Ejercicio1:
+
+\begin{itemize}
+   \item {\bf Compilar:} ./ej1 make
+   \item {\bf Ejecutar:} ./ej1
+   \item {\bf Correr casos de test:} ./ej1 tests
+   \item {\bf Benchmarks:} ./ej1 bench
+\end{itemize}
+
+\subsection{C\'odigo Fuente}
+% Cambiar por el que resalta la sintaxis
+\begin{verbatim}
+public void calcularSolucion() {
+ int n = cartas.length;
+ for ( int i = 0; i < n; i++ ) {
+  cache[i][i] = cartas[i];
+  jugadas[i][i].desdeIzquierda( 1 );
+ }
+
+ for ( int columna = 1; columna < n; columna++ ) {
+  for ( int diagonal = 0; diagonal < n - columna; diagonal++ ) {
+   int i = diagonal;
+   int j = columna + diagonal;
+   int min_ij = Integer.MAX_VALUE;
+   int puntos = 0;
+   int x = i, y = j;
+   for ( int k = i; k <= j; k++ ) {
+    int a = 0, b = 0;
+    puntos += cartas[k];
+    if ( k + 1 <= j ) a = cache[k + 1][j];
+    if ( k - 1 >= i ) b = cache[i][k - 1];
+    if ( min_ij < a && min_ij < b ) continue;
+    if ( a < b ) {
+     jugadas[i][j].desdeIzquierda( k - i + 1 );
+     min_ij = a;
+    } else {
+     jugadas[i][j].desdeDerecha( j - k + 1 );
+     min_ij = b;
+    }
+   }
+   cache[i][j] = puntos - min_ij;
+  }
+ }
+}
+\end{verbatim}
