@@ -1,19 +1,15 @@
 package Ejercicio3.main;
 
-import Ejercicio3.model.Dupla;
-import Ejercicio3.model.Jugador;
 import Ejercicio3.model.Tablero;
+import java.util.List;
 import Otros.Problema;
-
-import java.util.ArrayList;
+import Otros.Utils;
 
 /**
  * Created by santicamacho on 07/05/14.
  */
 public class Problema3 extends Problema {
 
-    private Dupla inicio;
-    private Dupla fin;
     private Tablero tablero;
 
     public Problema3(String input) {
@@ -23,33 +19,25 @@ public class Problema3 extends Problema {
     @Override
     protected void interpretarInstancia() {
         String[] lineas = input.split("\n");
-        String[] primerLinea = lineas[0].split(" ");
 
-        int n = Integer.valueOf(primerLinea[0]);
-        int k = Integer.valueOf(primerLinea[5]);
-        //asigno casillero de inicio
-        this.inicio = new Dupla(Integer.valueOf(primerLinea[1]),Integer.valueOf(primerLinea[2]));
-        //asigno casillero de fin
-        this.fin = new Dupla(Integer.valueOf(primerLinea[3]),Integer.valueOf(primerLinea[4]));
+        int[] params = Utils.parseArrayI(lineas[0]);
+		int n = params[0];
 
-        //asigno la matriz para el tablero.
-        int[][] matrix = new int[n][n];
+        int[][] potencias = new int[n][n];
         for (int i = 0; i < n; i++) {
-            String[] fila = lineas[i+1].split(" ");
+            int[] potencia = Utils.parseArrayI(lineas[i+1]);
             for (int j = 0; j < n; j++) {
-                matrix[i][j] = Integer.valueOf(fila[j]);
+                potencias[i][j] = potencia[j];
             }
         }
 
-        this.tablero = new Tablero(n,k,matrix);
+        tablero = new Tablero(n,params[5], params[1], params[2], params[3], params[4], potencias);
 
     }
 
-    public String resolver(){
-        Jugador jug = new Jugador(this.inicio,this.fin,this.tablero);
-        jug.resolver();
+    public String resolver() {
 
-        String output = "Saltos: "+ jug.saltos() + "\n";
+        String output = "Saltos: "+ tablero.resolver() + "\n";
 
         return output;
     }

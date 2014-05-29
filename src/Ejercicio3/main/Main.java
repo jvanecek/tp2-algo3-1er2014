@@ -15,31 +15,31 @@ public class Main {
      */
 
     public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String input = "";
-        System.out.print("Tablero de nxn, Ingresa un n:  ");
-        int n = Integer.valueOf(br.readLine());
-        input += String.valueOf(n) + " ";
-        System.out.print("Posicion Inicial \"x y\":  ");
-        input += br.readLine() + " ";
-        System.out.print("Posicion Final \"x y\":  ");
-        input += br.readLine() + " ";
-        System.out.print("Potencias Extra \"k\":  ");
-        input += br.readLine() + "\n";
+//        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+//        String input = "";
+//        System.out.print("Tablero de nxn, Ingresa un n:  ");
+//        int n = Integer.valueOf(br.readLine());
+//        input += String.valueOf(n) + " ";
+//        System.out.print("Posicion Inicial \"x y\":  ");
+//        input += br.readLine() + " ";
+//        System.out.print("Posicion Final \"x y\":  ");
+//        input += br.readLine() + " ";
+//        System.out.print("Potencias Extra \"k\":  ");
+//        input += br.readLine() + "\n";
+//
+//        System.out.println("Potencias Max de los casilleros:");
+//
+//        for(int i = 0; i < n; i++){
+//            int x = i + 1;
+//            for(int j = 0; j < n; j++) {
+//                int y = j + 1;
+//                System.out.print(x + "," + y + ":  ");
+//                input += br.readLine() + " ";
+//            }
+//            input += "\n";
+//        }
 
-        System.out.println("Potencias Max de los casilleros:");
-
-        for(int i = 0; i < n; i++){
-            int x = i + 1;
-            for(int j = 0; j < n; j++) {
-                int y = j + 1;
-                System.out.print(x + "," + y + ":  ");
-                input += br.readLine() + " ";
-            }
-            input += "\n";
-        }
-
-        //String input = "4 1 1 4 4 0\n1 1 1 1 \n1 1 1 1\n1 1 1 1\n1 1 1 1\n";
+        String input = "4 1 1 4 4 3\n1 1 1 1 \n1 1 1 1\n1 1 1 1\n1 1 1 1\n";
         Problema3 instance = new Problema3(input);
         System.out.print(instance.resolver());
     }
