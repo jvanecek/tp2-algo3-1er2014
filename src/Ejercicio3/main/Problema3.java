@@ -1,7 +1,7 @@
 package Ejercicio3.main;
 
 import Ejercicio3.model.Tablero;
-import java.util.List;
+import Ejercicio3.model.Nodo;
 import Otros.Problema;
 import Otros.Utils;
 
@@ -36,8 +36,12 @@ public class Problema3 extends Problema {
     }
 
     public String resolver() {
+		int saltos = tablero.resolver();
 
-        String output = "Saltos: "+ tablero.resolver() + "\n";
+        String output = saltos + "\n";
+
+		for( Nodo v : tablero.getSolucion() )
+			output += v.getFila() + " " + v.getCol() + " " + v.getPoderesUsados() + "\n";
 
         return output;
     }

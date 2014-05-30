@@ -15,5 +15,6 @@ out/
 *.backup
 *.out
 *.tex~
+*.synctex.gz
 
 *.DS_Store

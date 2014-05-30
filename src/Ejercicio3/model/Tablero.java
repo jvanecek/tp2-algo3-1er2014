@@ -1,4 +1,6 @@
 package Ejercicio3.model;
+
+import java.util.Collections;
 import java.util.Vector;
 import java.util.List;
 
@@ -8,6 +10,7 @@ public class Tablero {
 	private boolean[][] recorridos;
 	private Nodo src;
 	private Nodo dst;
+	private List<Nodo> solucion;
 
 	public Tablero(int n, int k, int f0, int c0, int fn, int cn, int[][] potencias){
 		this.n = n;
@@ -20,6 +23,7 @@ public class Tablero {
 			this.recorridos[i][j] = false;
 			this.potencias[i][j] = potencias[i][j];
 		}
+		solucion = new Vector<Nodo>();
 	}
 
 	public int resolver(){
@@ -41,6 +45,7 @@ public class Tablero {
 		for( Nodo v : nodos ){
 			if( !fueRecorrido(v) ){
 				if( v.equals(dst) ){
+					construirSolucion(v);
 					return nivel;
 				}else{
 					marcarComoRecorrido(v);
@@ -51,6 +56,19 @@ public class Tablero {
 		}
 
 		return bfs(nodos_siguientes, nivel+1);
+	}
+
+	public void construirSolucion(Nodo dst){
+		dst.setPoderesUsados(0);
+		int poderesDisponiblesSig = dst.getPoderesDisponibles();
+		solucion.add(dst);
+
+		while( dst.getParent() != null ){
+			dst = dst.getParent();
+			dst.setPoderesUsados( dst.getPoderesDisponibles() - poderesDisponiblesSig);
+			poderesDisponiblesSig = dst.getPoderesDisponibles();
+			solucion.add(0, dst);
+		}
 	}
 
 	public boolean fueRecorrido(Nodo i){
@@ -65,24 +83,24 @@ public class Tablero {
 		List<Nodo> adyacentes = new Vector<Nodo>();
 
 		int p = getPotencia(v);
-		int k = v.getK();
+		int k = v.getPoderesDisponibles();
 		int f = v.getFila();
 		int c = v.getCol();
 
 		// agrego todos los vecinos a los que llego con la potencia
 		for( int i = 1; i <= p; i++ ){
-			if( estaEnTablero(f-i,c) ) adyacentes.add( new Nodo(f-i,c,k) );	// abajo
-			if( estaEnTablero(f+i,c) ) adyacentes.add( new Nodo(f+i,c,k) ); // arriba
-			if( estaEnTablero(f,c-1) ) adyacentes.add( new Nodo(f,c-i,k) ); // a la izq
-			if( estaEnTablero(f,c+1) ) adyacentes.add( new Nodo(f,c+i,k) ); // a la der
+			if( estaEnTablero(f-i,c) ) adyacentes.add( new Nodo(f-i,c,k,v) );	// abajo
+			if( estaEnTablero(f+i,c) ) adyacentes.add( new Nodo(f+i,c,k,v) ); // arriba
+			if( estaEnTablero(f,c-i) ) adyacentes.add( new Nodo(f,c-i,k,v) ); // a la izq
+			if( estaEnTablero(f,c+i) ) adyacentes.add( new Nodo(f,c+i,k,v) ); // a la der
 		}
 
 		// agrego todos los vecinos a los que llego con la potencia extra
 		for( int i = 1; i <= k; i++ ){
-			if( estaEnTablero(f-(p+i),c) ) adyacentes.add( new Nodo(f-(p+i),c,k-i) );	// abajo;
-			if( estaEnTablero(f+(p+i),c) ) adyacentes.add( new Nodo(f+(p+i),c,k-i) );   // arriba
-			if( estaEnTablero(f,c-(p+i)) ) adyacentes.add( new Nodo(f,c-(p+i),k-i) );   // a la izq
-			if( estaEnTablero(f,c+(p+i)) ) adyacentes.add( new Nodo(f,c+(p+i),k-i) );   // a la der
+			if( estaEnTablero(f-(p+i),c) ) adyacentes.add( new Nodo(f-(p+i),c,k-i,v) );	// abajo;
+			if( estaEnTablero(f+(p+i),c) ) adyacentes.add( new Nodo(f+(p+i),c,k-i,v) );   // arriba
+			if( estaEnTablero(f,c-(p+i)) ) adyacentes.add( new Nodo(f,c-(p+i),k-i,v) );   // a la izq
+			if( estaEnTablero(f,c+(p+i)) ) adyacentes.add( new Nodo(f,c+(p+i),k-i,v) );   // a la der
 		}
 		return adyacentes;
 	}
@@ -95,4 +113,6 @@ public class Tablero {
 	public int getPotencia(Nodo v){
 		return potencias[v.getFila()-1][v.getCol()-1];
 	}
+
+	public List<Nodo> getSolucion(){ return this.solucion; }
 }
