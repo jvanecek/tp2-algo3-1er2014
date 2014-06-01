@@ -52,27 +52,134 @@ Una vez que encontramos a \code{dst} (sabemos que lo hace porque BFS termina), n
 
 \subsection{Algoritmo}
 
-\begin{algorithm}[H]
-\caption{\code{BFS(List<Nodo> nodos, int dist\_root)}}\label{max_pb}
-\begin{algorithmic}[1]
-\STATE \code{List<Nodo> nodos\_siguientes = []}
-\FOR{\code{each nodo in nodos}}
-  \IF{ \code{!fueRecorrido(nodo)} }
-    \IF{ \code{nodo == dst} }
-      \STATE \code{contruir\_camino(nodo)}
-      \RETURN \code{dist\_root}
-    \ELSE
-      \STATE \code{marcarComoRecorrido(nodo)}
-      \STATE \code{nodos\_siguientes.addAll( nodo.getAdyacentes() )}
-    \ENDIF
-  \ENDIF
-\ENDFOR
-\RETURN \code{BFS( nodos\_siguientes, dist\_root++ )}
-\end{algorithmic}
-\end{algorithm}
+A continuaci\'on escribiremos en pseudoc\'odigo los m\'etodos de los objetos. 
 
-\subsubsection{Algoritmo}
+\subsubsection{\code{Nodo}}
 
-%\subsection{Test de complejidad}
+Constructores de la clase: 
 
-%\subsection{Compilar y ejecutar}
+\begin{verbatim}
+public Nodo(int i, int j, int k){
+  this.parent = null;
+  this.fila = i; 
+  this.col = j; 
+  this.poderes_disponibles = k;
+}
+
+public Nodo(int i, int j, int k, Nodo v){
+  this.parent = v;
+  this.fila = i; 
+  this.col = j; 
+  this.poderes_disponibles = k;
+}
+\end{verbatim}
+
+\subsubsection{\code{Tablero}}
+
+M\'etodo de inicializaci\'on del Tablero: 
+
+\begin{verbatim}
+public Tablero(int n, int k, int f0, int c0, int fn, int cn, int[][] potencias){
+  this.n = n;
+  this.src = Nodo(f0, c0, k);
+  this.dst = Nodo(fn, cn, k);
+  this.potencias = potencias;
+  this.recorridos = new boolean[n][n];
+  this.solucion = [];
+}
+\end{verbatim}
+
+La complejidad es copiar la matriz de potencias, que tiene una complejidad de $O(n^2)$ operaci\'ones. 
+
+\begin{verbatim}
+public boolean estaEnTablero( int fila, int col ){
+  return fila >= 1 && col >= 1 &&
+         fila <= n && col <= n;
+}
+\end{verbatim}
+
+Complejidad: $O(1)$
+
+
+\begin{verbatim}
+public List<Nodo> getAdyacentes(Nodo v){
+  List<Nodo> ady = [];
+
+  int p = getPotencia(v);
+  int k = v.getPoderesDisponibles();
+  int f = v.getFila();
+  int c = v.getCol();
+
+  // agrego todos los vecinos a los que llego con la potencia fija
+  for( int i = 1 ... p ){
+    if( estaEnTablero(f-i,c) ) ady.add( new Nodo(f-i,c,k,v) ); // abajo
+    if( estaEnTablero(f+i,c) ) ady.add( new Nodo(f+i,c,k,v) ); // arriba
+    if( estaEnTablero(f,c-i) ) ady.add( new Nodo(f,c-i,k,v) ); // a la izq
+    if( estaEnTablero(f,c+i) ) ady.add( new Nodo(f,c+i,k,v) ); // a la der
+  }
+
+  // agrego todos los vecinos a los que llego con la potencia extra
+  for( int i = 1 ... k ){
+    if( estaEnTablero(f-(p+i),c) ) ady.add( new Nodo(f-(p+i),c,k-i,v) ); // abajo;
+    if( estaEnTablero(f+(p+i),c) ) ady.add( new Nodo(f+(p+i),c,k-i,v) ); // arriba
+    if( estaEnTablero(f,c-(p+i)) ) ady.add( new Nodo(f,c-(p+i),k-i,v) ); // a la izq
+    if( estaEnTablero(f,c+(p+i)) ) ady.add( new Nodo(f,c+(p+i),k-i,v) ); // a la der
+  }
+  return ady;
+}
+\end{verbatim}
+
+Complejidad: $O(p+k) \in O(n)$
+
+\begin{verbatim}
+public int bfs(List<Nodo> nodos, int dist_root){
+  List<Nodo> nodos_siguientes = new Vector<Nodo>();
+
+  foreach( Nodo v in nodos ){
+    if( !fueRecorrido(v) ){
+      if( v == dst ){
+        construirSolucion(v);
+        return dist_root;
+      }else{
+        marcarComoRecorrido(v);
+        nodos_siguientes.addAll( getAdyacentes(v) );
+      }
+    }
+  }
+
+  return bfs(nodos_siguientes, dist_root++);
+}
+\end{verbatim}
+
+Recorre todos los nodos del grafo una sola vez, y por cada uno pide los adyacentes, cuya operaci\'on cuesta $O(n)$. En total, la complejidad de este m\'etodo es $n^2 \times O(n) = O(n^3)$.  
+
+\begin{verbatim}
+public int resolver(){
+  List<Nodo> nodos = [];
+  nodos.add(src);
+  return bfs(nodos, 1);
+}
+\end{verbatim}
+
+Complejidad: $O(n^3)$
+
+\begin{verbatim}
+public void construirSolucion(Nodo dst){
+  dst.setPoderesUsados(0);
+  int poderesDisponiblesSig = dst.getPoderesDisponibles();
+  solucion.add(dst);
+
+  while( dst.getParent() != null ){
+    dst = dst.getParent();
+    dst.setPoderesUsados( dst.getPoderesDisponibles() - poderesDisponiblesSig);
+    poderesDisponiblesSig = dst.getPoderesDisponibles();
+    solucion.add(0, dst); // agrego al principio. 
+  }
+}
+\end{verbatim}
+
+Complejidad: $O(n)$
+
+\subsection{Test de complejidad}
+
+\subsection{Compilar y ejecutar}
