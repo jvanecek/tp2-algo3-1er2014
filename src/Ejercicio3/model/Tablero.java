@@ -89,7 +89,7 @@ public class Tablero {
 
 		// agrego todos los vecinos a los que llego con la potencia
 		for( int i = 1; i <= p; i++ ){
-			if( estaEnTablero(f-i,c) ) adyacentes.add( new Nodo(f-i,c,k,v) );	// abajo
+			if( estaEnTablero(f-i,c) ) adyacentes.add( new Nodo(f-i,c,k,v) ); // abajo
 			if( estaEnTablero(f+i,c) ) adyacentes.add( new Nodo(f+i,c,k,v) ); // arriba
 			if( estaEnTablero(f,c-i) ) adyacentes.add( new Nodo(f,c-i,k,v) ); // a la izq
 			if( estaEnTablero(f,c+i) ) adyacentes.add( new Nodo(f,c+i,k,v) ); // a la der
@@ -98,9 +98,9 @@ public class Tablero {
 		// agrego todos los vecinos a los que llego con la potencia extra
 		for( int i = 1; i <= k; i++ ){
 			if( estaEnTablero(f-(p+i),c) ) adyacentes.add( new Nodo(f-(p+i),c,k-i,v) );	// abajo;
-			if( estaEnTablero(f+(p+i),c) ) adyacentes.add( new Nodo(f+(p+i),c,k-i,v) );   // arriba
-			if( estaEnTablero(f,c-(p+i)) ) adyacentes.add( new Nodo(f,c-(p+i),k-i,v) );   // a la izq
-			if( estaEnTablero(f,c+(p+i)) ) adyacentes.add( new Nodo(f,c+(p+i),k-i,v) );   // a la der
+			if( estaEnTablero(f+(p+i),c) ) adyacentes.add( new Nodo(f+(p+i),c,k-i,v) );	// arriba
+			if( estaEnTablero(f,c-(p+i)) ) adyacentes.add( new Nodo(f,c-(p+i),k-i,v) );	// a la izq
+			if( estaEnTablero(f,c+(p+i)) ) adyacentes.add( new Nodo(f,c+(p+i),k-i,v) );	// a la der
 		}
 		return adyacentes;
 	}

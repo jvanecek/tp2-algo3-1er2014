@@ -2,228 +2,77 @@
 
 \subsection{Presentaci\'on del problema}
 
-La Matrix es un juego que consite de participantes en un tablero cuadrado. Cada casillero contiene un resorte que le permite al jugador saltar a otro casillero en direcci\'on vertical u horizontal dependiendo del valor de salto del resorte.
+La Matrix es un juego que consite de participantes en un tablero cuadrado de $n\times n$. Cada casillero contiene un resorte que le permite al jugador saltar a otro casillero en direcci\'on vertical u horizontal dependiendo del valor de salto del resorte. Adem\'as cada participante cuenta con una cantidad $k$ de potencias extra que puede usar para llegar a casilleros mas alejados, y que se van agotando a medida que las vamos usando.
 
-El problema esta en buscar la cantidad m\'inima de saltos que puede hacer un participante desde un casillero origen a otro destino. Ademas cada participante tiene una cantidad de potencias extra que puede usar para llegar a casilleros mas alejados.
+El problema esta en encontrar la cantidad m\'inima de saltos que puede hacer un participante desde un casillero origen a otro destino, devolver la secuencia de casilleros por los que pasa, y hacerlo en un tiempo de $O(n^3 k)$. 
 
 \subsection{Resoluci\'on}
 
-Para resolver este problema se plante\'o hacer un grafo \textit{tridimensional} (explicado m\'as adelante). 
+El problema lo modelamos con un grafo, donde cada casillero es un nodo del mismo, y existe arista entre dos nodos, si y solo si son alcanzables en un salto. Ahora bien, para determinar si existe un salto entre dos casilleros hay que tener en cuenta las potencias extras que poseemos al momento de realizar el salto. A pesar de ello, las aristas no tienen pesos, y por eso usando un algoritmo como BFS podemos determinar la distancia m\'inima entre dos nodos y es este el que vamos a usar para encontrar la soluci\'on al problema propuesto. 
 
-Al plantear el grafo (dirigido) de casilleros como nodos conectados a sus posibles casilleros de saltos hac\'ia f\'acil la busqueda de camino m\'inimo entre origen y destino, pero se comlpicaba el c\'alculo del uso de las potencias, ya que era muy costoso saber cuantas potencias se habian usado.
+Asique lo que usamos es un BFS sobre un grafo \textit{din\'amico}, ya que el conjunto de nodos adyacentes a un nodo $v$ va a ir cambiando dependiendo de las potencias que tenga en ese momento, aunque como mucho puede en un casillero puedo saltar a todos los de arriba, a todos los de abajo y a todos los de los costados. Es decir, $d(v) \leq 2(n-1)$. 
 
-Es por eso que se plante\'o finalmente uno tridimensional. Este incluye informaci\'on de las potencias en s\'i mismo.
-El grafo dirigido tridimensional consiste en repetir el grafo de casilleros como nodos y conexiones como aristas $k$ cantidad de veces, donde $k =$ n\'umero de potencias.
-Es decir, cuando se toma una decisi\'on que no requiere potencias, me quedo en la misma matriz, pero cuando uso alguna potencia, salto a otra matriz dependiendo de la cantidad de potencias utilizadas.
-No puedo saltar de una matriz con mayor $k$ a una de menor.
-Entonces obtengo un grafo dirigido de $(n^2)*k$ nodos, donde una misma posici\'on esta repetida $k$ veces.
+Veamos que la complejidad pedida tambi\'en se cumple, ya que el grafo tiene $n^2$ nodos, y las aristas son: 
+
+\begin{equation*}
+ m = \sum_{v \in V} d(v) / 2 \leq \sum_{v \in V} 2(n-1) / 2 = n^2 (n-1) = n^3 - n^2
+\end{equation*}
+
+Por lo tanto, la complejidad del BFS queda en $O(|V| + |E|) \leq O(n^2 + n^3 - n^2) = O(n^3) \in O(n^3 k)$. 
+
+\subsection{Implementaci\'on}
+
+El algoritmo lo escribimos en Java, y contamos con dos clases: \code{Nodo} y \code{Tablero}. La primera cuenta con las siguientes variables: 
+
+\begin{itemize}
+ \item \code{int fila} y \code{col}: fila y columna del casillero.
+ \item \code{int poderes\_disponibles}: variable que consulto cuando pido tomo sus adyacentes durante el BFS
+ \item \code{int poderes\_usados}: variable que consulto al momento de construir la soluci\'on final. 
+ \item \code{Nodo parent}: nodo padre en el \'arbol que arma BFS. Es null si el nodo en cuesti\'on es el root, o lo que es lo mismo, el nodo origen. 
+\end{itemize}
+
+Por otro lado, \code{Tablero} cuenta con las siguientes variables: 
+
+\begin{itemize}
+ \item \code{int n}: Cantidad de filas (y columnas)
+ \item \code{int[][] potencias}: cantidad fija de potencias para cada casillero
+ \item \code{boolean[][] recorridos}: a medida que BFS recorre el arbol de nodos, va seteando esta matriz sobre los nodos recorridos. 
+ \item \code{Nodo src}: nodo origen, o casillero inicial. 
+ \item \code{Nodo dst}: nodo destino, o casillero final. 
+ \item \code{List<Nodo> solucion}: lista de nodos (o casilleros) en orden pertenecientes al camino m\'inimo entre \code{src} y \code{dst}
+\end{itemize}
+
+El BFS implementado funciona de la misma manera que \'el com\'un: arranco con el nodo inicial, recorro todos los adyacentes buscando el nodo final, si no lo encuentra, busca en todos los adyacentes que recorri\'o en la iteraci\'on anterior, y as\'i sucesivamente. Como vimos en la pr\'actica, BFS recorre todos los nodos del \'arbol y por lo tanto, si \code{dst} se encuentra en el mismo, nuestro algoritmo termina. 
+
+Ahora queremos ver que no nos salteamos ninguna soluci\'on, y para ello veamos que siempre recorremos todas las posibilidades cuando buscamos los nodos adyacentes. Supongamos que un momento dado queremos encontrar los vecinos de un nodo $v_i$, la potencia del mismo que es $p_i$ y la potencia extra disponible (\code{poderes\_disponibles}) es $k_i$. Los casilleros a los que puedo llegar usando solamente $p_i$, van a seguir teniendo como \code{poderes\_disponibles} a $k_i$, en cambio, a los que llegu\'e usando $q$ poderes extra, van a tener como \code{poderes\_disponibles} a $k_i-q$. Adem\'as todos estos nodos adyacentes van a tener como \code{parent} a $v_i$. 
+
+Nuestro BFS empieza con $v_1$ (\code{src}), cuya potencia fija es $p_1$, y su variable \code{poderes\_disponibles} seteado en $k$. Asique, al final, estamos cubriendo todos los posibles nodos adyacentes, y al final BFS recorre todos los posibles caminos que existen entre dos nodos cualesquiera. 
+
+Una vez que encontramos a \code{dst} (sabemos que lo hace porque BFS termina), nuestro algoritmo ``sube'' en el \'arbol que construyo BFS a trav\'es de la variable de los nodos \code{parent} que apunta a su nodo padre, y va calculando la potencia extra usada en cada salto, ya que si un nodo $v_{i+1}$ tiene una \code{potencia\_disponible} de $k_{i+1}$ y su padre tiene una potencia de $k_i$, entonces la potencia extra (\code{poderes\_usados}) que us\'o el padre fue $k_{i+1} - k_i$.
+
+\subsection{Algoritmo}
+
+\begin{algorithm}[H]
+\caption{\code{BFS(List<Nodo> nodos, int dist\_root)}}\label{max_pb}
+\begin{algorithmic}[1]
+\STATE \code{List<Nodo> nodos\_siguientes = []}
+\FOR{\code{each nodo in nodos}}
+  \IF{ \code{!fueRecorrido(nodo)} }
+    \IF{ \code{nodo == dst} }
+      \STATE \code{contruir\_camino(nodo)}
+      \RETURN \code{dist\_root}
+    \ELSE
+      \STATE \code{marcarComoRecorrido(nodo)}
+      \STATE \code{nodos\_siguientes.addAll( nodo.getAdyacentes() )}
+    \ENDIF
+  \ENDIF
+\ENDFOR
+\RETURN \code{BFS( nodos\_siguientes, dist\_root++ )}
+\end{algorithmic}
+\end{algorithm}
 
 \subsubsection{Algoritmo}
-
-Como cada arista representa un salto, todas tienen el mismo costo. Por eso, adaptamos el problema a buscar el camino m\'inimo con el algoritmo de BFS en un grafo dirigido, empezando desde el casillero origen.
-
-\begin{verbatim}
-LaMatrix(Tablero inicio fin potencia)
-    niveles = { inicio : 0 } //diccionario con la clave inicio y 0 como significado
-    anterior = { inicio : NULL } //diccionario, clave inicio y NULL como significado
-    i = 1
-    frontera = [inicio]
-    while(frontera){
-        siguiente = []
-        for x in frontera {
-            for y in vecinos(x){ //vecinos es un arreglo del alcance que tiene x
-                if !nivel.estaDefinido(y){
-                    nivel[y] = i
-                    anterior[y] = x
-                    siguiente.agregar(y)
-                }
-            }
-        }
-        frontera = siguitente
-        i++
-        }
-
-    saltosAfin = niveles.significado(fin) //cantidad de saltos
-    secuenciaDeSaltos = anterior.dameSecuencia(fin) //devuelve el camino desde el inicio hasta en fin.
-    return (saltosAfin, secuenciaDeSaltos)
-\end{verbatim}
-
-
-\subsection{Demostraci\'on} 
-
-\subsection{An\'alisis de complejidad}
-
-El algoritmo es principalmente una busqueda en anchura, y esta tiene complejidad temporal de $O(V + E)$ donde $V$ son los nodos y $E$ las aristas.
-En nuestro caso tenemos $(n^2)*k$ nodos y en caso m\'aximo en que todos los nodos esten conectados a sus posibles lugares de salto serian $(n^2)*2(n-1)*k$ ya que hay $n^2$ nodos con $n-1$ conexiones m\'aximas en cada direcci\'on (vertical u horizontal) por cada nivel $k$. Esto dar\'ia acotado superiormente $(n^3)*k$.
-Es decir que el peor caso ser\'ia de $O((n^2)*k + (n^3)*k)$ que es lo mismo que $O((n^3)*k)$.
 
 %\subsection{Test de complejidad}
 
 %\subsection{Compilar y ejecutar}
-
-\subsection{C\'odigo de fuente}
-\begin{verbatim}
-public class Tablero {
-    private int[][][] superMatrix; //array de matrices, la posicion en el primer arreglo son los K usados.
-    private int n;
-    private int poderes;
-
-    public Tablero(int n, int k, int[][] Matrix)
-    {
-        this.n = n;
-        this.poderes = k;
-
-        superMatrix = new int[k+1][][];
-        for(int i = 0; i <= k; i++)
-        {
-            superMatrix[i] = Matrix;
-        }
-    }
-
-    public List<Tripla> vecinos (int k, int x, int y)
-    {
-        int valor = this.superMatrix[k][x-1][y-1]; //x-1 y-1
-
-        List<Tripla> vs = new ArrayList<Tripla>();
-        List<Tripla> horizontales = valoresHorizontales(k,x,y,valor);
-        List<Tripla> verticales = valoresVerticales(k,x,y,valor);
-
-        vs.addAll(horizontales);
-        vs.addAll(verticales);
-        return vs;
-    }
-
-    private List<Tripla> valoresHorizontales (int k, int x, int y, int valor)
-    {
-        List<Tripla> vs = new ArrayList<Tripla>();
-        Tripla v = new Tripla(k,x,y);
-        //valores horizontales
-        for (int i = 0; i <= valor; i++)
-        {
-            if ((x+i) <= this.n)
-            {
-                v.setSecond((x+i));
-                vs.add(v);
-            }
-            if ((x-i) > 0)
-            {
-                v.setSecond((x-i));
-                vs.add(v);
-            }
-        }
-        //valores horizontales con poder
-        if((this.poderes-k)>0) //si quedan poderes entonces...
-        {
-            for (int i = 1; i <= (this.poderes - k); i++)
-            {
-                if ((x + valor + i) <= this.n)
-                {
-                    v.setFirst(k + i);
-                    v.setSecond(x + valor + i);
-                    vs.add(v);
-                }
-                if ((x - valor - i) > 0)
-                {
-                    v.setFirst(k + i);
-                    v.setSecond(x - valor - i);
-                    vs.add(v);
-                }
-            }
-        }
-        return vs;
-    }
-
-    private List<Tripla> valoresVerticales (int k, int x, int y, int valor)
-    {
-        List<Tripla> vs = new ArrayList<Tripla>();
-        Tripla v = new Tripla(k,x,y);
-        //valores verticales
-        for (int i = 0; i <= valor; i++)
-        {
-            if ((y+i) <= this.n)
-            {
-                v.setThird(y+i);
-                vs.add(v);
-            }
-            if ((y-i) > 0)
-            {
-                v.setThird(y-i);
-                vs.add(v);
-            }
-        }
-        //valores verticales con poder
-        if((this.poderes-k)>0) //si quedan poderes entonces...
-        {
-            for (int i = 1; i <= (this.poderes - k); i++)
-            {
-                if ((y + valor + i) <= this.n)
-                {
-                    v.setFirst((k + i));
-                    v.setThird(y + valor + i);
-                    vs.add(v);
-                }
-                if ((y - valor - i) > 0)
-                {
-                    v.setFirst((k + i));
-                    v.setThird(y - valor - i);
-                    vs.add(v);
-                }    
-            }
-        }
-        return vs;
-    }
-}
--------------------------
-
-public class Jugador {
-    private HashMap<Dupla, Integer> niveles; //diccionario que contiene a cuantos 
-                                             saltos o nivel esta tal casillero.
-    private HashMap<Dupla, Integer> poderesUsadosHastaAqui; //diccionario que contiene 
-                                                             a cuantos poderes se usaron hasta el casillero.
-    private HashMap<Tripla, Tripla> anterior; //diccionario que dado un casillero 
-                                                devuelve cual es el anterior en su camino minimo desde el inicio.
-    private Dupla inicio;
-    private Dupla fin;
-    private Tablero tablero;
-
-    public Jugador(Dupla inicio, Dupla fin, Tablero tablero)
-    {
-        this.inicio = inicio;
-        this.fin = fin;
-        this.tablero = tablero;
-        this.niveles = new HashMap<Dupla, Integer>();
-        this.poderesUsadosHastaAqui = new HashMap<Dupla, Integer>();
-        this.anterior = new HashMap<Tripla, Tripla>();
-    }
-
-    public void resolver() //USA EL ALGORITMO DE BFS
-    {
-        this.niveles.put(this.inicio,0);
-        Tripla inicioT = this.inicio.duplaToTripla(0);
-        this.anterior.put(inicioT, null);
-        int nivel = 1;
-        ArrayList<Tripla> frontera = new ArrayList<Tripla>();
-        frontera.add(inicioT);
-        while(!frontera.isEmpty())
-        {
-            ArrayList<Tripla> siguiente = new ArrayList<Tripla>();
-            for(Tripla t : frontera)
-            {
-                for (Tripla v : tablero.vecinos(t.getFirst(),t.getSecond(),t.getThird()))
-                {
-                    Dupla v2 = v.triplaToDupla();
-                    if(!this.niveles.containsKey(v2))
-                    {
-                        this.niveles.put(v2,nivel);
-                        this.anterior.put(v,t);
-                        siguiente.add(v);
-                    }
-                }
-            }
-            frontera.clear();
-            frontera.addAll(siguiente);
-            nivel = nivel+1;
-        }
-    }
-}
-\end{verbatim}
