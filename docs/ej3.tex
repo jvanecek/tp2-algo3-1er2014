@@ -52,13 +52,45 @@ Una vez que encontramos a \code{dst} (sabemos que lo hace porque BFS termina), n
 
 \subsection{Algoritmo}
 
-A continuaci\'on escribiremos en pseudoc\'odigo los m\'etodos de los objetos. 
+A continuaci\'on escribiremos en pseudoc\'odigo el BFS y la construcci\'on de la soluci\'on
+
+\begin{algorithm}[H]
+\caption{int resolver(){}
+\begin{algorithmic}[1]
+  \STATE return bfs([src], 1);
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]
+\caption{\texttt{bfs}(List$<$Nodo$>$, int dist\_root)}
+\begin{algorithmic}[1]
+  \STATE List$<$Nodo$>$ nodos\_siguientes = [];
+  \FOR{\textbf{each} Nodo v \textbf{in} nodos}
+    \IF{ \textbf{not} fueRecorrido(v) }
+      \IF{ v == dst }
+        \STATE construirSolucion(v);
+        \RETURN dist\_root;
+      \ELSE
+        \STATE marcarComoRecorrido(v);
+        \STATE nodos\_siguientes.addAll( getAdyacentes(v) );
+      \ENDIF
+    \ENDIF
+  \ENDFOR
+  \RETURN bfs(nodos\_siguientes, dist\_root++);
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Test de complejidad}
+
+\subsection{Compilar y ejecutar}
+
+\subsection{C\'odigo fuente}
 
 \subsubsection{\code{Nodo}}
 
 Constructores de la clase: 
 
-\begin{verbatim}
+\footnotesize\footnotesize\begin{verbatim}
 public Nodo(int i, int j, int k){
   this.parent = null;
   this.fila = i; 
@@ -72,13 +104,13 @@ public Nodo(int i, int j, int k, Nodo v){
   this.col = j; 
   this.poderes_disponibles = k;
 }
-\end{verbatim}
+\end{verbatim}\normalsize\normalsize
 
 \subsubsection{\code{Tablero}}
 
 M\'etodo de inicializaci\'on del Tablero: 
 
-\begin{verbatim}
+\footnotesize\begin{verbatim}
 public Tablero(int n, int k, int f0, int c0, int fn, int cn, int[][] potencias){
   this.n = n;
   this.src = Nodo(f0, c0, k);
@@ -87,21 +119,21 @@ public Tablero(int n, int k, int f0, int c0, int fn, int cn, int[][] potencias){
   this.recorridos = new boolean[n][n];
   this.solucion = [];
 }
-\end{verbatim}
+\end{verbatim}\normalsize
 
 La complejidad es copiar la matriz de potencias, que tiene una complejidad de $O(n^2)$ operaci\'ones. 
 
-\begin{verbatim}
+\footnotesize\begin{verbatim}
 public boolean estaEnTablero( int fila, int col ){
   return fila >= 1 && col >= 1 &&
          fila <= n && col <= n;
 }
-\end{verbatim}
+\end{verbatim}\normalsize
 
 Complejidad: $O(1)$
 
 
-\begin{verbatim}
+\footnotesize\begin{verbatim}
 public List<Nodo> getAdyacentes(Nodo v){
   List<Nodo> ady = [];
 
@@ -127,11 +159,11 @@ public List<Nodo> getAdyacentes(Nodo v){
   }
   return ady;
 }
-\end{verbatim}
+\end{verbatim}\normalsize
 
 Complejidad: $O(p+k) \in O(n)$
 
-\begin{verbatim}
+\footnotesize\begin{verbatim}
 public int bfs(List<Nodo> nodos, int dist_root){
   List<Nodo> nodos_siguientes = new Vector<Nodo>();
 
@@ -149,21 +181,21 @@ public int bfs(List<Nodo> nodos, int dist_root){
 
   return bfs(nodos_siguientes, dist_root++);
 }
-\end{verbatim}
+\end{verbatim}\normalsize
 
 Recorre todos los nodos del grafo una sola vez, y por cada uno pide los adyacentes, cuya operaci\'on cuesta $O(n)$. En total, la complejidad de este m\'etodo es $n^2 \times O(n) = O(n^3)$.  
 
-\begin{verbatim}
+\footnotesize\begin{verbatim}
 public int resolver(){
   List<Nodo> nodos = [];
   nodos.add(src);
   return bfs(nodos, 1);
 }
-\end{verbatim}
+\end{verbatim}\normalsize
 
 Complejidad: $O(n^3)$
 
-\begin{verbatim}
+\footnotesize\begin{verbatim}
 public void construirSolucion(Nodo dst){
   dst.setPoderesUsados(0);
   int poderesDisponiblesSig = dst.getPoderesDisponibles();
@@ -176,10 +208,6 @@ public void construirSolucion(Nodo dst){
     solucion.add(0, dst); // agrego al principio. 
   }
 }
-\end{verbatim}
+\end{verbatim}\normalsize
 
 Complejidad: $O(n)$
-
-\subsection{Test de complejidad}
-
-\subsection{Compilar y ejecutar}
