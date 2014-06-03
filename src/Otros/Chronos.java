@@ -27,5 +27,20 @@ public class Chronos {
 
         return estimatedTime/iter;
     }
+    
+    public static long runResolve(Problema ej, int iter) {
+    	long startTime, estimatedTime = 0;
+
+        for( int i = 1; i <= iter; i++ ) {
+            ej.resetear();
+
+            startTime = Chronos.now();
+            ej.resolver();
+            estimatedTime += Chronos.now() - startTime;
+        }
+
+        return estimatedTime/iter;
+
+    }
 }
 // vim: set tabstop=4 shiftwidth=4 expandtab autoindent:

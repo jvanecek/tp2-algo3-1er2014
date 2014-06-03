@@ -15,4 +15,8 @@ public abstract class Problema {
     protected abstract void interpretarInstancia();
 
     public abstract String resolver();
+
+    public void resetear(){
+    	interpretarInstancia();
+    }
 }
