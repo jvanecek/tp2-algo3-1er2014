@@ -211,3 +211,26 @@ public void construirSolucion(Nodo dst){
 \end{verbatim}\normalsize
 
 Complejidad: $O(n)$
+
+\subsection{Adicionales}
+
+\subsubsection{Modificaciones del Algoritmo}
+La modificaci\'on del juego \textit{La Matrix} consiste en agregarle un costo proporcional al salto a cada resorte. Los jugadores aun tienen $k$ potencias que pueden utilizar para agregar gratuitamente potencias a su salto.
+
+Se nos pide modificar el algoritmo para llegar de un origen a destino con la m\'inima cantidad de costo posible.
+
+El algoritmo anterior se resuelve usando BFS sobre un grafo din\'amico ya que las aristas no tienen costo, en este problema, vamos a usar Dijkstra para remplazar al BFS en la b\'usqueda del camino menos costoso.
+
+La idea en Dijkstra es ir explorando todos los caminos m\'as cortos que parten del v\'ertice origen y que llevan a todos los dem\'as v\'ertices; cuando se obtiene el camino m\'as corto desde el v\'ertice origen, al resto de v\'ertices que componen el grafo, el algoritmo se detiene.
+
+En este juego, surge el problema de que puedo tener m\'as de un costo para llegar de un nodo a otro dependiendo de las unidades de $k$ que utilice, es por eso que proponemos \textit{clonar} el grafo de $n^2$ nodos $k$ veces, formando un grafo tridimensional, para tener control de las potencias utilizadas que pertenecen a $k$ para llegar a un nodo. Con esta estructura, puedo asignar los vecinos de un nodo sabiendo cuantas potencias gratuitas quedan y el camino m\'inimo del origen a destino es el m\'inimo de los caminos a todos los \textit{clones} de destino.
+
+\subsubsection{Modificaciones de la Complejidad}
+
+La complejidad depende principalmente del Algoritmo de Dijkstra, que se ejecuta sobre un grafo de $(n^2)k$ nodos. Si lo implementamos utilizando una cola de prioridad, Dijkstra tiene complejidad de $O((|V|)log(|V|))$ donde $V$ son los vertices del grafo, entonces la complejidad es de $O((n^2)k log((n^2)k)$ que es lo m\'ismo que $O(2(n^2)k log(nk))$.
+
+El nuevo algoritmo tambi\'en tiene la b\'usqueda de un m\'inimo en un arreglo de $k$ elementos para devolver la soluci\'on final, esta tiene complejidad $O(log k)$ si lo hacemos con busqueda binaria, aunque no afecta a la complejidad final ya que sumada a la de Dijkstra, esta \'ultima prevalece.
+
+
+
+
