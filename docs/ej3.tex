@@ -10,12 +10,12 @@ El problema esta en encontrar la cantidad m\'inima de saltos que puede hacer un 
 
 El problema lo modelamos con un grafo, donde cada casillero es un nodo del mismo, y existe arista entre dos nodos, si y solo si son alcanzables en un salto. Ahora bien, para determinar si existe un salto entre dos casilleros hay que tener en cuenta las potencias extras que poseemos al momento de realizar el salto. A pesar de ello, las aristas no tienen pesos, y por eso usando un algoritmo como BFS podemos determinar la distancia m\'inima entre dos nodos y es este el que vamos a usar para encontrar la soluci\'on al problema propuesto. 
 
-Asique lo que usamos es un BFS sobre un grafo \textit{din\'amico}, ya que el conjunto de nodos adyacentes a un nodo $v$ va a ir cambiando dependiendo de las potencias que tenga en ese momento, aunque como mucho puede en un casillero puedo saltar a todos los de arriba, a todos los de abajo y a todos los de los costados. Es decir, $d(v) \leq 2(n-1)$. 
+Asique lo que usamos es un BFS sobre un grafo \textit{din\'amico}, ya que el conjunto de nodos adyacentes a un nodo $v$ va a ir cambiando dependiendo de las potencias que tenga en ese momento, aunque como mucho puede en un casillero puedo saltar a todos los de arriba, a todos los de abajo y a todos los de los costados. Es decir, a grosso modo, $d(v) \leq 2(n-1)$. 
 
 Veamos que la complejidad pedida tambi\'en se cumple, ya que el grafo tiene $n^2$ nodos, y las aristas son: 
 
 \begin{equation*}
- m = \sum_{v \in V} d(v) / 2 \leq \sum_{v \in V} 2(n-1) / 2 = n^2 (n-1) = n^3 - n^2
+ |E| = \sum_{v \in V} d(v) / 2 \leq \sum_{v \in V} 2(n-1) / 2 = n^2 (n-1) = n^3 - n^2
 \end{equation*}
 
 Por lo tanto, la complejidad del BFS queda en $O(|V| + |E|) \leq O(n^2 + n^3 - n^2) = O(n^3) \in O(n^3 k)$. 
@@ -55,7 +55,7 @@ Una vez que encontramos a \code{dst} (sabemos que lo hace porque BFS termina), n
 A continuaci\'on escribiremos en pseudoc\'odigo el BFS y la construcci\'on de la soluci\'on
 
 \begin{algorithm}[H]
-\caption{int resolver(){}
+\caption{int resolver()}
 \begin{algorithmic}[1]
   \STATE return bfs([src], 1);
 \end{algorithmic}
@@ -82,7 +82,36 @@ A continuaci\'on escribiremos en pseudoc\'odigo el BFS y la construcci\'on de la
 
 \subsection{Test de complejidad}
 
-\subsection{Compilar y ejecutar}
+Como ya calculamos anteriormente en la secci\'on \textbf{Resoluci\'on}, la complejidad de nuestro algoritmo es $O(n^3)$, acotando la cantidad de adyacentes que puede tener un nodo por $2(n-1)$. 
+
+Aunque si queremos tener en cuenta a $k$, podemos considerar constante los $p$ y estimar que $d(v)$ va a ser menor o igual a $4k$, para cualquier $v$, ya que como mucho va a haber una arista a cada $k$ nodo en las cuatro direcciones. Luego, las cantidad de aristas del grafo del tablero es
+
+\begin{equation*}
+ |E| = \sum_{v \in V} d(v) / 2 \leq \sum_{v \in V} 4k / 2 = n^2 2k
+\end{equation*}
+
+Y la complejidad de BFS teniendo en cuenta a $k$ queda en $O(|V|+|E|) \leq O(n^2 + n^2 k) \leq O(n^2k) \in O(n^3k)$. 
+
+Para evaluar la complejidad analizamos tres casos: 
+
+\begin{enumerate}
+ \item Primero estudiamos el impacto del tama\~no del tablero en nuestro algoritmo, teniendo un $p$ constante m\'inimo, y sin potencia adicional. 
+ 
+ \item Segundo, siendo el tama\~no constante, como influye la cantidad de potencia adicional. 
+ 
+ \item Por \'ultimo, contrastamos el impacto de $k$ en tablero de distintos tama\~nos. 
+\end{enumerate}
+
+\ponerGrafico{./ej3/caso_uno.jpg}{Tiempo usando un tablero con $p=1$ y $k=0$}{0.6}{}
+Como era esperable, en funci\'on del tama\~no, el algoritmo resuelve el problema en un orden cuadrado. 
+
+\ponerGrafico{./ej3/caso_tres_lineal.jpg}{En funci\'on de $k$, fijando $n=100$}{0.6}{}
+
+Este caso tambi\'en confirmamos nuestros hip\'otesis de que en funci\'on del $k$, la complejidad es lineal. 
+
+\ponerGrafico{./ej3/caso_dos_plot.jpg}{Contraste de distintos tama\~nos, en funci\'on de $k$}{0.6}{}
+
+Como \'ultimo experimento quisimos constrastamo el impacto del $k$ en distintos tama\~nos, y si bien todos un crecimiento proporcional, a mayor tama\~no m\'as tiempo le toma al algoritmo encontrar la soluci\'on, y esto tiene sentido porque hay mayor cantidad de vecinos que recorrer. 
 
 \subsection{C\'odigo fuente}
 
@@ -215,6 +244,7 @@ Complejidad: $O(n)$
 \subsection{Adicionales}
 
 \subsubsection{Modificaciones del Algoritmo}
+
 La modificaci\'on del juego \textit{La Matrix} consiste en agregarle un costo proporcional al salto a cada resorte. Los jugadores aun tienen $k$ potencias que pueden utilizar para agregar gratuitamente potencias a su salto.
 
 Se nos pide modificar el algoritmo para llegar de un origen a destino con la m\'inima cantidad de costo posible.
@@ -227,9 +257,9 @@ En este juego, surge el problema de que puedo tener m\'as de un costo para llega
 
 \subsubsection{Modificaciones de la Complejidad}
 
-La complejidad depende principalmente del Algoritmo de Dijkstra, que se ejecuta sobre un grafo de $(n^2)k$ nodos. Si lo implementamos utilizando una cola de prioridad, Dijkstra tiene complejidad de $O((|V|)log(|V|))$ donde $V$ son los vertices del grafo, entonces la complejidad es de $O((n^2)k log((n^2)k)$ que es lo m\'ismo que $O(2(n^2)k log(nk))$.
+La complejidad depende principalmente del Algoritmo de Dijkstra, que se ejecuta sobre un grafo de $n^2k$ nodos. Si lo implementamos utilizando una cola de prioridad, Dijkstra tiene complejidad de $O(|V|\log(|V|))$ donde $V$ son los vertices del grafo, entonces la complejidad queda en $O(n^2k \log(n^2k))$.
 
-El nuevo algoritmo tambi\'en tiene la b\'usqueda de un m\'inimo en un arreglo de $k$ elementos para devolver la soluci\'on final, esta tiene complejidad $O(log k)$ si lo hacemos con busqueda binaria, aunque no afecta a la complejidad final ya que sumada a la de Dijkstra, esta \'ultima prevalece.
+El nuevo algoritmo tambi\'en tiene la b\'usqueda de un m\'inimo en un arreglo de $k$ elementos para devolver la soluci\'on final, esta tiene complejidad $O(\log k)$ si lo hacemos con busqueda binaria, aunque no afecta a la complejidad final ya que sumada a la de Dijkstra, esta \'ultima prevalece.
 
 
 
